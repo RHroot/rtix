@@ -1,10 +1,10 @@
 // === STARTUP ===
+spawn-at-startup         "dunst"
 spawn-at-startup         "lxqt-policykit-agent"
-spawn-sh-at-startup      "xrdb -merge ~/env/.Xresources"
-spawn-sh-at-startup      "systemctl --user start --now dunst.service"
+spawn-sh-at-startup      "xrdb -merge ~/rtix/home/.Xresources"
 spawn-sh-at-startup      "wl-paste --type text --watch cliphist store & disown"
 spawn-sh-at-startup      "wl-paste --type image --watch cliphist store & disown"
-spawn-sh-at-startup      "swaybg -i ~/env/Art/Wallpapers/Phonebooth-transporter.png -m fill"
+spawn-sh-at-startup      "swaybg -i ~/rtix/Art/Wallpapers/Phonebooth-transporter.png -m fill"
 spawn-sh-at-startup      r#"swayidle -w \
     timeout 600 'brightnessctl -s set 10%' resume 'brightnessctl -r' \
     timeout 900 'swaylock' \

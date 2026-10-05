@@ -3,7 +3,7 @@ monitor = 0
 follow = mouse
 width = 400
 origin = top-right
-offset = 10x20
+offset = (10, 20)
 shrink = yes
 notification_limit = 8
 progress_bar = true
@@ -14,7 +14,7 @@ indicate_hidden = yes
 markup = full
 padding = 12
 horizontal_padding = 14
-frame_color = "#6f0000"
+frame_color = "#9D6BFF"
 frame_width = 2
 corner_radius = 10
 separator_height = 1
@@ -25,7 +25,7 @@ transparency = 5
 icon_position = left
 max_icon_size = 56
 enable_recursive_icon_lookup = true
-icon_path = /run/current-system/sw/share/icons:/usr/share/icons:/usr/local/share/icons:/home/sten/.local/share/icons
+icon_path = /usr/share/icons:/usr/local/share/icons
 icon_theme = Papirus-Dark
 history_length = 50
 sticky_history = yes
@@ -33,7 +33,6 @@ show_indicators = yes
 sort = yes
 stack_duplicates = true
 hide_duplicate_count = no
-indicate_hidden = yes
 idle_threshold = 0
 show_age_threshold = 60
 word_wrap = yes
@@ -45,23 +44,23 @@ mouse_middle_click = do_action, close_current
 mouse_right_click = close_current
 
 [urgency_low]
-background = "#1a1a1a"
-foreground = "#eaeaea"
-highlight = "#6f0000"
+background = "#0A0812"
+foreground = "#8A81A6"
+highlight = "#372E4D"
 timeout = 4
 fullscreen = delay
 
 [urgency_normal]
-background = "#1a1a1a"
-foreground = "#eaeaea"
-highlight = "#9a0000"
+background = "#171029"
+foreground = "#F2EEFF"
+highlight = "#B26BFF"
 timeout = 7
 fullscreen = show
 
 [urgency_critical]
-background = "#1a1a1a"
-foreground = "#ffffff"
-highlight = "#cc0000"
+background = "#171029"
+foreground = "#FFFFFF"
+highlight = "#FF6B8D"
 timeout = 0
 fullscreen = show
 
