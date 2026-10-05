@@ -114,7 +114,7 @@ binds {
     // CUSTOM BINDS
     Super+Return             { spawn "kitty"; }
     Super+B                  { spawn "helium"; }
-    Super+E                  { spawn "pcmanfm"; }
+    Super+E                  { spawn "thunar"; }
     Super+Shift+Return       { spawn "alacritty"; }
     Super+Shift+V            { spawn "pavucontrol"; }
     Super+Shift+E            { spawn "emacsclient -c"; }
