@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# ── Config ─────────────────────────────────────────────
+FLAKE=".#rhroot"
+mkdir -p "$HOME/.cache"
+LOG_FILE="$HOME/.cache/nixos-switch.log"
+HOST_NAME="${FLAKE#*.#}"
+
+cd ~/env/
+
+# ── Colors ─────────────────────────────────────────────
+RED="\033[1;31m"
+GREEN="\033[1;32m"
+BLUE="\033[1;34m"
+DIM="\033[2m"
+BOLD="\033[1m"
+RESET="\033[0m"
+
+# ── Header ─────────────────────────────────────────────
+printf "\n%b\n" "${BOLD}${BLUE}NixOS Rebuild${RESET}"
+printf "%b\n" "${DIM}──────────────────────────────${RESET}"
+printf "%b\n" "${DIM}flake   ${RESET}${FLAKE}"
+printf "%b\n" "${DIM}target  ${RESET}nixosConfigurations.${HOST_NAME}"
+printf "%b\n\n" "${DIM}log     ${RESET}${LOG_FILE}"
+
+# ── Rebuild Function ────────────────────────────────────
+run_rebuild() {
+  sudo nixos-rebuild switch \
+    --impure \
+    --flake "$FLAKE" \
+    2>& \
+    1 | tee "$LOG_FILE"
+}
+
+# ── Formatter ───────────────────────────────────────────
+format_output() {
+  awk '
+  /building the system configuration/ {
+      print "\n\033[1;33m󰐍  Building system\033[0m"; next
+  }
+  /activating the configuration/ {
+      print "\n\033[1;34m󰑓  Activating configuration\033[0m"; next
+  }
+  /restarting|starting|stopping/ {
+      print "  \033[1;36m→ " $0 "\033[0m"; next
+  }
+  /copying path/ { next }
+  /substituting/ { next }
+  /downloading/ {
+      print "  \033[2m" $0 "\033[0m"; next
+  }
+  /warning/ {
+      print "\033[1;33m⚠ " $0 "\033[0m"; next
+  }
+  /error/ {
+      print "\033[1;31m✖ " $0 "\033[0m"; next
+  }
+  '
+}
+
+# ── Execute ────────────────────────────────────────────
+if run_rebuild | format_output; then
+  printf "\n%b\n" "${DIM}──────────────────────────────${RESET}"
+  printf "%b\n" "${GREEN}✔ Rebuild completed${RESET}"
+else
+  printf "\n%b\n" "${DIM}──────────────────────────────${RESET}"
+  printf "%b\n\n" "${RED}✖ Rebuild failed${RESET}"
+
+  grep -i --color=always "error" "$LOG_FILE" | tail -n 20 || true
+  exit 1
+fi

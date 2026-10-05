@@ -1,0 +1,2 @@
+base base-devel linux linux-firmware
+git vim btop curl wget tree jq file

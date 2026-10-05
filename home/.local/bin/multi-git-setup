@@ -1,0 +1,238 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# ==============================================================================
+# Colors & Formatting
+# ==============================================================================
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly CYAN='\033[0;36m'
+readonly NC='\033[0m' # No Color
+
+# ==============================================================================
+# Helper Functions
+# ==============================================================================
+print_header() {
+  echo -e "${BLUE}================================================================${NC}"
+  echo -e "${GREEN}  $1${NC}"
+  echo -e "${BLUE}================================================================${NC}"
+}
+
+print_success() { echo -e "${GREEN}✓ $1${NC}"; }
+print_info() { echo -e "${CYAN}ℹ $1${NC}"; }
+print_warn() { echo -e "${YELLOW}⚠ $1${NC}"; }
+print_error() { echo -e "${RED}✗ $1${NC}"; }
+
+confirm() {
+  local prompt="$1" default="${2:-Y}" resp display
+  [[ "${default,,}" == "y" ]] && display="[Y/n]" || display="[y/N]"
+
+  while true; do
+    read -rp "$(echo -e "${CYAN}$prompt $display:${NC} ") " resp
+    resp=${resp:-$default}
+    resp=${resp,,}
+    [[ "$resp" =~ ^y ]] && return 0
+    [[ "$resp" =~ ^n ]] && return 1
+    print_error "Invalid input. Please enter 'y' or 'n'."
+  done
+}
+
+backup_file() {
+  local file="$1"
+  if [[ -f "$file" ]]; then
+    local backup="${file}.bak.$(date +%Y%m%d%H%M%S)"
+    mv "$file" "$backup"
+    print_info "Backed up existing $file to $backup"
+  fi
+}
+
+# ==============================================================================
+# Main Script
+# ==============================================================================
+print_header "SSH & Git Multi-Account Setup"
+echo ""
+print_info "This script configures SSH keys and Git settings for GitHub and Codeberg."
+
+if ! confirm "Do you want to continue?"; then
+  print_info "Exiting. No changes were made."
+  exit 0
+fi
+
+# ------------------------------------------------------------------------------
+# 1. Account Selection
+# ------------------------------------------------------------------------------
+echo ""
+print_header "Select Setup Type"
+echo "  1) Personal Only"
+echo "  2) Both Personal and Work"
+echo ""
+
+SETUP_CHOICE=""
+while [[ "$SETUP_CHOICE" != "1" && "$SETUP_CHOICE" != "2" ]]; do
+  read -rp "$(echo -e "${CYAN}Enter your choice (1 or 2): ${NC}") " SETUP_CHOICE
+  if [[ "$SETUP_CHOICE" != "1" && "$SETUP_CHOICE" != "2" ]]; then
+    print_error "Invalid choice. Please enter 1 or 2."
+  fi
+done
+
+# ------------------------------------------------------------------------------
+# 2. SSH Directory & Key Generation
+# ------------------------------------------------------------------------------
+echo ""
+print_header "SSH Key Setup"
+SSH_DIR="$HOME/.ssh"
+mkdir -p "$SSH_DIR"
+chmod 700 "$SSH_DIR"
+
+generate_key() {
+  local name="$1" comment="$2"
+  if [[ -f "$SSH_DIR/$name" ]]; then
+    print_warn "Key $name already exists."
+    if confirm "Overwrite $name? (This will delete the existing key)"; then
+      rm -f "$SSH_DIR/$name" "$SSH_DIR/$name.pub"
+      ssh-keygen -t ed25519 -C "$comment" -f "$SSH_DIR/$name" -N ""
+      chmod 600 "$SSH_DIR/$name"
+      print_success "Generated new $name"
+    else
+      print_info "Kept existing $name"
+    fi
+  else
+    ssh-keygen -t ed25519 -C "$comment" -f "$SSH_DIR/$name" -N ""
+    chmod 600 "$SSH_DIR/$name"
+    print_success "Generated $name"
+  fi
+}
+
+generate_key "id_ed25519_personal" "personal@linux"
+if [[ "$SETUP_CHOICE" == "2" ]]; then
+  generate_key "id_ed25519_work" "work@linux"
+fi
+
+# ------------------------------------------------------------------------------
+# 3. Git Configuration
+# ------------------------------------------------------------------------------
+echo ""
+print_header "Git Configuration Setup"
+
+read -rp "$(echo -e "${CYAN}Enter your name for personal account: ${NC}") " GIT_PERSONAL_NAME
+read -rp "$(echo -e "${CYAN}Enter your email for personal account: ${NC}") " GIT_PERSONAL_MAIL
+
+if [[ "$SETUP_CHOICE" == "2" ]]; then
+  read -rp "$(echo -e "${CYAN}Enter your name for work account: ${NC}") " GIT_WORK_NAME
+  read -rp "$(echo -e "${CYAN}Enter your email for work account: ${NC}") " GIT_WORK_MAIL
+fi
+
+# Backup existing configs
+backup_file "$HOME/.gitconfig"
+[[ "$SETUP_CHOICE" == "2" ]] && backup_file "$HOME/.gitconfig-work"
+
+# Write Personal Git Config
+cat >"$HOME/.gitconfig" <<EOF
+[user]
+    name = $GIT_PERSONAL_NAME
+    email = $GIT_PERSONAL_MAIL
+    signingkey = $SSH_DIR/id_ed25519_personal.pub
+
+[gpg]
+    format = ssh
+
+[commit]
+    gpgsign = false
+
+EOF
+
+# Append Work IncludeIf blocks only if Work is selected
+if [[ "$SETUP_CHOICE" == "2" ]]; then
+  cat >>"$HOME/.gitconfig" <<EOF
+[includeIf "hasconfig:remote.*.url:git@github-work:*"]
+    path = ~/.gitconfig-work
+
+[includeIf "hasconfig:remote.*.url:git@codeberg-work:*"]
+    path = ~/.gitconfig-work
+EOF
+
+  # Write Work Git Config
+  cat >"$HOME/.gitconfig-work" <<EOF
+[user]
+    name = $GIT_WORK_NAME
+    email = $GIT_WORK_MAIL
+    signingkey = $SSH_DIR/id_ed25519_work.pub
+
+[gpg]
+    format = ssh
+EOF
+  print_success "Configured personal and work Git settings."
+else
+  print_success "Configured personal Git settings."
+fi
+
+# ------------------------------------------------------------------------------
+# 4. SSH Configuration
+# ------------------------------------------------------------------------------
+echo ""
+print_header "SSH Config Setup"
+backup_file "$SSH_DIR/config"
+
+cat >"$SSH_DIR/config" <<EOF
+# Personal Accounts
+Host github
+    HostName github.com
+    User git
+    IdentityFile $SSH_DIR/id_ed25519_personal
+    IdentitiesOnly yes
+
+Host codeberg
+    HostName codeberg.org
+    User git
+    IdentityFile $SSH_DIR/id_ed25519_personal
+    IdentitiesOnly yes
+EOF
+
+if [[ "$SETUP_CHOICE" == "2" ]]; then
+  cat >>"$SSH_DIR/config" <<EOF
+
+# Work Accounts
+Host github-work
+    HostName github.com
+    User git
+    IdentityFile $SSH_DIR/id_ed25519_work
+    IdentitiesOnly yes
+
+Host codeberg-work
+    HostName codeberg.org
+    User git
+    IdentityFile $SSH_DIR/id_ed25519_work
+    IdentitiesOnly yes
+EOF
+fi
+
+chmod 600 "$SSH_DIR/config"
+print_success "SSH config updated."
+
+# ------------------------------------------------------------------------------
+# 5. Completion & Instructions
+# ------------------------------------------------------------------------------
+echo ""
+print_header "Setup Complete!"
+echo ""
+echo -e "${GREEN}Next Steps:${NC}"
+echo "1. Add the public keys to your GitHub/Codeberg accounts:"
+echo "   - Personal:  cat $SSH_DIR/id_ed25519_personal.pub"
+if [[ "$SETUP_CHOICE" == "2" ]]; then
+  echo "   - Work:      cat $SSH_DIR/id_ed25519_work.pub"
+fi
+echo ""
+echo -e "${GREEN}Usage Examples:${NC}"
+echo "  Personal:"
+echo "    git clone git@github:username/repo.git"
+echo "    git clone git@codeberg:user/repo.git"
+if [[ "$SETUP_CHOICE" == "2" ]]; then
+  echo "  Work:"
+  echo "    git clone git@github-work:org/repo.git"
+  echo "    git clone git@codeberg-work:org/repo.git"
+fi
+echo ""
+print_info "Welcome, $USER! Your environment is ready."

@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# ── Config ─────────────────────────────────────────────
+FLAKE=".#rhroot"
+mkdir -p "$HOME/.cache"
+LOG_FILE="$HOME/.cache/nixos-switch.log"
+HOST_NAME="${FLAKE#*.#}"
+
+cd ~/env/
+
+# ── Colors ─────────────────────────────────────────────
+RED="\033[1;31m"
+GREEN="\033[1;32m"
+MAGENTA="\033[1;35m"
+CYAN="\033[1;36m"
+YELLOW="\033[1;33m"
+DIM="\033[2m"
+BOLD="\033[1m"
+RESET="\033[0m"
+
+# ── Header ─────────────────────────────────────────────
+printf "\n%b\n" "${BOLD}${MAGENTA}NixOS Upgrade${RESET}"
+printf "%b\n" "${DIM}──────────────────────────────${RESET}"
+printf "%b\n" "${DIM}flake   ${RESET}${FLAKE}"
+printf "%b\n" "${DIM}target  ${RESET}nixosConfigurations.${HOST_NAME}"
+printf "%b\n\n" "${DIM}log     ${RESET}${LOG_FILE}"
+
+# ── Step 1: Update Flake ───────────────────────────────
+printf "%b\n" "${YELLOW}󰚰 Updating flake inputs${RESET}"
+nix flake update
+
+# ── Step 2: Git Sync ───────────────────────────────────
+printf "%b\n" "${YELLOW}󰊢 Syncing lockfile${RESET}"
+if ! git diff --quiet; then
+  git add .
+  git commit -m 'Upgrading flake to update the system further'
+  printf "%b\n" "  ${CYAN}→ committed changes${RESET}"
+else
+  printf "%b\n" "  ${DIM}→ no changes${RESET}"
+fi
+
+# ── Step 3: Rebuild ────────────────────────────────────
+printf "\n%b\n" "${YELLOW}󰐍 Rebuilding system${RESET}"
+
+run_upgrade() {
+  sudo nixos-rebuild switch \
+    --impure \
+    --flake "$FLAKE" \
+    > \
+    "$LOG_FILE" 2>&1 # --show-trace \
+}
+
+if run_upgrade; then
+  printf "%b\n" "${GREEN}  ✔ rebuild successful${RESET}"
+else
+  printf "%b\n\n" "${RED}  ✖ rebuild failed${RESET}"
+
+  grep -i --color=always "error" "$LOG_FILE" | tail -n 20 || true
+  exit 1
+fi
+
+# ── Done ───────────────────────────────────────────────
+printf "\n%b\n" "${DIM}──────────────────────────────${RESET}"
+printf "%b\n" "${GREEN}Upgrade complete${RESET}"

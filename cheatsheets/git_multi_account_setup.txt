@@ -1,0 +1,79 @@
+========================================
+FILE: ~/.gitconfig
+========================================
+
+[user]
+    name = Your Personal Name
+    email = personal@example.com
+    signingkey = ~/.ssh/id_ed25519_personal
+
+[includeIf "hasconfig:remote.*.url:git@github-work:**"]
+    path = ~/.gitconfig-work
+
+[includeIf "hasconfig:remote.*.url:git@gitlab-work:**"]
+    path = ~/.gitconfig-work
+
+========================================
+FILE: ~/.gitconfig-work
+========================================
+
+[user]
+    name = YOUR_WORK_NAME
+    email = YOUR_WORK_EMAIL
+    signingkey = ~/.ssh/id_ed25519_work
+
+
+========================================
+FILE: ~/.ssh/config
+========================================
+
+Host github
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_personal
+    IdentitiesOnly yes
+
+Host github-work
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_work
+    IdentitiesOnly yes
+
+Host gitlab
+    HostName gitlab.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_personal
+    IdentitiesOnly yes
+
+Host gitlab-work
+    HostName gitlab.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_work
+    IdentitiesOnly yes
+
+
+========================================
+REQUIRED PERMISSIONS
+(Run these commands once)
+========================================
+
+ssh-keygen -t ed25519 -C "personal@linux" -f ~/.ssh/id_ed25519_personal
+ssh-keygen -t ed25519 -C "work@linux" -f ~/.ssh/id_ed25519_work
+
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/config
+chmod 600 ~/.ssh/id_ed25519_personal
+chmod 600 ~/.ssh/id_ed25519_work
+
+
+========================================
+HOW TO USE
+========================================
+
+Personal (default):
+    git clone git@github:username/repo.git
+    git clone git@gitlab:user/repo.git
+
+Work:
+    git clone git@github-work:org/repo.git
+    git clone git@gitlab-work:org/repo.git

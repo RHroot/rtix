@@ -1,0 +1,88 @@
+[env]
+TERM = "alacritty"
+WINIT_X11_SCALE_FACTOR = "1.0"
+
+[window]
+position = "None"
+dynamic_padding = true
+decorations = "full"
+opacity = 0.90
+blur = true
+startup_mode = "Windowed"
+dynamic_title = true
+decorations_theme_variant = "None"
+
+[window.padding]
+x = 2
+y = 2
+
+[scrolling]
+history = 10000
+multiplier = 3
+
+[selection]
+save_to_clipboard = true
+
+[cursor]
+unfocused_hollow = false
+
+[cursor.style]
+shape = "Block"
+blinking = "Never"
+
+[cursor.vi_mode_style]
+shape = "Block"
+blinking = "Never"
+
+[colors]
+draw_bold_text_with_bright_colors = true
+transparent_background_colors = true
+
+[font]
+size = 18
+
+builtin_box_drawing = true
+
+[font.normal]
+family = "FiraCode Nerd Font"
+
+[font.bold]
+family = "FiraCode Nerd Font"
+
+[font.italic]
+family = "FiraCode Nerd Font"
+
+[font.bold_italic]
+family = "FiraCode Nerd Font"
+
+[keyboard]
+bindings = [
+{ key = "c", mods = "ALT", action = "CopySelection" },
+{ key = "v", mods = "ALT", action = "PasteSelection" },
+]
+
+[mouse]
+hide_when_typing = true
+
+[general]
+live_config_reload = true
+ipc_socket = true
+import = ["./theme.toml"]
+
+[[hints.enabled]]
+command         = "xdg-open"
+hyperlinks      = true
+post_processing = true
+persist         = false
+mouse.enabled   = true
+binding         = { key = "U", mods = "Control|Shift" }
+regex           = "(ipfs:|ipns:|magnet:|mailto:|gemini://|gopher://|https://|http://|news:|file:|git://|ssh:|ftp://)[^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩‘]+"
+
+[debug]
+render_timer = false
+persistent_logging = false
+log_level = "Warn"
+renderer = "None"
+print_events = false
+highlight_damage = false
+prefer_egl = false

@@ -1,0 +1,140 @@
+configuration {
+    cycle: true;
+    show-icons: true;
+    scroll-method: 1;
+    case-sensitive: false;
+    display-run: ">>";
+    display-combi: ">>>";
+    display-window: " Windows";
+    display-drun: " Apps";
+    drun-url-launcher: "xdg-open";
+    disable-history: false;
+    max-history-size: 3;
+    font: "FiraCode Nerd Font 15";
+    modi: "window,run,drun,combi,filebrowser";
+}
+
+* {
+    background-colour:           #05040A;
+    foreground-colour:           #F2EEFF;
+    border-colour:               #9D6BFF;
+    handle-colour:               #B26BFF;
+
+    selected-normal-background:  #B26BFF;
+    selected-normal-foreground:  #05040A;
+
+    active-indicator:            #D0A4FF;
+}
+
+window {
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    width:                       50%;
+    enabled:                     true;
+    border:                      2px;
+    border-radius:               20px;
+    border-color:                @border-colour;
+    background-color:            @background-colour;
+}
+
+mainbox {
+    enabled:                     true;
+    spacing:                     15px;
+    padding:                     25px;
+    background-color:            transparent;
+    children:                    [ "inputbar", "message", "listview" ];
+}
+
+inputbar {
+    enabled:                     true;
+    spacing:                     10px;
+    background-color:            transparent;
+    text-color:                  @foreground-colour;
+    children:                    [ "prompt", "textbox-prompt-colon", "entry" ];
+}
+
+prompt {
+    enabled:                     true;
+    background-color:            inherit;
+    text-color:                  inherit;
+}
+
+textbox-prompt-colon {
+    enabled:                     true;
+    expand:                      false;
+    str:                         " ❯";
+    background-color:            inherit;
+    text-color:                  inherit;
+}
+
+entry {
+    enabled:                     true;
+    background-color:            inherit;
+    text-color:                  inherit;
+    placeholder:                 "search...";
+}
+
+listview {
+    enabled:                     true;
+    columns:                     1;
+    lines:                       10;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    fixed-height:                true;
+    spacing:                     5px;
+    background-color:            transparent;
+}
+
+element {
+    enabled:                     true;
+    spacing:                     10px;
+    padding:                     8px 12px;
+    border-radius:               15px;
+    background-color:            transparent;
+    text-color:                  @foreground-colour;
+}
+
+element normal.normal, element alternate.normal {
+    background-color:            transparent;
+    text-color:                  @foreground-colour;
+}
+
+element normal.active, element alternate.active {
+    background-color:            transparent;
+    text-color:                  @active-indicator;
+    border:                      0px 0px 0px 4px;
+    border-color:                @active-indicator;
+}
+
+element selected.normal, element selected.active {
+    background-color:            @selected-normal-background;
+    text-color:                  @selected-normal-foreground;
+}
+
+element-icon {
+    background-color:            transparent;
+    size:                        25px;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    vertical-align:              0.5;
+}
+
+message {
+    enabled:                     true;
+    background-color:            transparent;
+}
+
+textbox {
+    padding:                     10px;
+    border-radius:               15px;
+    background-color:            @background-colour;
+    text-color:                  @foreground-colour;
+    border:                      1px;
+    border-color:                @border-colour;
+}

@@ -1,0 +1,9 @@
+lazygit
+shfmt
+bun-bin prettierd
+go go-tools
+marksman-git mdformat
+sqls postgresql sql-formatter
+lldb clang cmake make pkgconf
+lua stylua-bin lua-language-server
+python python-uv python-ruff python-lsp-server

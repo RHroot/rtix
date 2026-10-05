@@ -1,0 +1,1 @@
+pipewire pipewire-pulse pipewire-alsa wireplumber pavucontrol alsa-utils

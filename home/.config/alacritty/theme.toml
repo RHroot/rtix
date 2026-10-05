@@ -1,0 +1,33 @@
+# Obsidian v0.2 - Darker + More Purple Pop
+
+[colors.primary]
+background = "#05040A"
+foreground = "#F2EEFF"
+
+[colors.cursor]
+cursor = "#B26BFF"
+text = "#05040A"
+
+[colors.selection]
+background = "#2B1E52"
+text = "#FFFFFF"
+
+[colors.normal]
+black   = "#05040A"
+red     = "#FF6B8D"
+green   = "#4FD39B"
+yellow  = "#FFC966"
+blue    = "#83A7FF"
+magenta = "#B26BFF"
+cyan    = "#71D2E8"
+white   = "#E9E5F7"
+
+[colors.bright]
+black   = "#372E4D"
+red     = "#FF8FAE"
+green   = "#82EFC0"
+yellow  = "#FFDA8A"
+blue    = "#A7C0FF"
+magenta = "#D0A4FF"
+cyan    = "#98E3F4"
+white   = "#FFFFFF"

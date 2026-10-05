@@ -1,0 +1,15 @@
+! Cursor Theme
+Xcursor.theme: Bibata-Modern-Ice
+Xcursor.size: 30
+! GTK Cusomization
+gtk.theme_name: Flat-Remix-GTK-Violet-Darkest
+gtk.font_name: FiraCode Nerd Font 12
+gtk.monospace_font_name: FiraCode Nerd Font 12
+gtk.icon_theme_name: Papirus-Dark
+! Screen
+Xft.autohint: 0
+Xft.lcdfilter: lcddefault
+Xft.hintstyle: hintfull
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb

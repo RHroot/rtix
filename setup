@@ -1,0 +1,122 @@
+#!/bin/sh
+set -eu
+
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+msg() {
+  printf '==> %s\n' "$*"
+}
+
+install_packages() {
+  msg "Installing repo packages"
+
+  if [ -d "$ROOT/packages/repo" ]; then
+    find "$ROOT/packages/repo" -type f -name '*.txt' -exec cat {} + \
+      | grep -v '^[[:space:]]*#' \
+      | grep -v '^[[:space:]]*$' \
+      | xargs -r sudo pacman -S --needed --noconfirm
+  fi
+
+  msg "Installing AUR packages"
+
+  if [ -d "$ROOT/packages/aur" ]; then
+    find "$ROOT/packages/aur" -type f -name '*.txt' -exec cat {} + \
+      | grep -v '^[[:space:]]*#' \
+      | grep -v '^[[:space:]]*$' \
+      | xargs -r paru -S --needed --noconfirm
+  fi
+}
+
+link_configs() {
+  msg "Linking config files"
+
+  [ -d "$ROOT/home" ] || return 0
+
+  find "$ROOT/home" -type f | while IFS= read -r src; do
+    rel="${src#$ROOT/home/}"
+    dst="$HOME/$rel"
+
+    # Create parent directory if it does not exist
+    if ! mkdir -p "$(dirname "$dst")" 2>/dev/null; then
+      msg "ERROR: cannot create parent directory for $dst"
+      continue
+    fi
+
+    # Already correct symlink, skip
+    if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+      msg "Skipping: $dst"
+      continue
+    fi
+
+    # If destination is a real directory, do not touch it automatically
+    if [ -d "$dst" ] && [ ! -L "$dst" ]; then
+      msg "WARNING: $dst is a directory, skipping"
+      continue
+    fi
+
+    # If file, symlink, or broken symlink exists, back it up
+    if [ -e "$dst" ] || [ -L "$dst" ]; then
+      stamp="$(date +%Y%m%d-%H%M%S)"
+      bak="${dst}.bak.${stamp}"
+      i=1
+
+      # Avoid overwriting an existing backup
+      while [ -e "$bak" ] || [ -L "$bak" ]; do
+        bak="${dst}.bak.${stamp}-${i}"
+        i=$((i + 1))
+      done
+
+      mv "$dst" "$bak"
+      msg "Backup: $dst -> $bak"
+    fi
+
+    ln -s "$src" "$dst"
+    msg "Link: $dst -> $src"
+  done
+}
+
+run_system_scripts() {
+  msg "Running system scripts"
+
+  [ -d "$ROOT/system" ] || return 0
+
+  for script in "$ROOT"/system/*.sh; do
+    [ -x "$script" ] || continue
+
+    msg "Running $(basename "$script")"
+    "$script"
+  done
+}
+
+case "${1:-all}" in
+  packages)
+    install_packages
+    ;;
+  configs)
+    link_configs
+    ;;
+  system)
+    run_system_scripts
+    ;;
+  all)
+    install_packages
+    link_configs
+    run_system_scripts
+    ;;
+  *)
+    echo "Usage: ./setup.sh [packages|configs|system|all]"
+    exit 1
+    ;;
+esac
+
+sudo tee /etc/environment > /dev/null <<'EOF'
+export PAGER="bat"
+export EDITOR="nvim"
+export VISUAL="nvim"
+export BROWSER="helium"
+export XCURSOR_SIZE="30"
+export MIRU_PLAYER="mpv"
+export COLORTERM="truecolor"
+export XCURSOR_THEME="Bibata-Modern-Ice"
+export GTK_THEME="Flat-Remix-GTK-Violet-Darkest"
+EOF

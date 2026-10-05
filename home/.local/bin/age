@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+# Get the creation time of the root filesystem (approximates OS installation)
+ROOT_BIRTH_TIME=$(stat -c %W / 2>/dev/null)
+
+if [ "$ROOT_BIRTH_TIME" != "0" ] && [ -n "$ROOT_BIRTH_TIME" ]; then
+  CURRENT_TIME=$(date +%s)
+  DAYS_SINCE_INSTALL=$(((CURRENT_TIME - ROOT_BIRTH_TIME) / 86400))
+  echo "${DAYS_SINCE_INSTALL} days"
+else
+  # Fallback: try to get from filesystem creation time using tune2fs (for ext filesystems)
+  if command -v tune2fs >/dev/null 2>&1; then
+    DATE_STR=$(tune2fs -l / 2>/dev/null | grep "Filesystem created" | cut -d: -f2-)
+    if [ -n "$DATE_STR" ]; then
+      BIRTH_TIMESTAMP=$(date -d "$DATE_STR" +%s 2>/dev/null)
+      if [ -n "$BIRTH_TIMESTAMP" ]; then
+        CURRENT_TIME=$(date +%s)
+        DAYS_SINCE_INSTALL=$(((CURRENT_TIME - BIRTH_TIMESTAMP) / 86400))
+        echo "${DAYS_SINCE_INSTALL} days"
+      else
+        echo "Unknown"
+      fi
+    else
+      echo "Unknown"
+    fi
+  else
+    echo "Unknown"
+  fi
+fi

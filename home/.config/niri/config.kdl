@@ -1,0 +1,460 @@
+// === STARTUP ===
+spawn-at-startup         "lxqt-policykit-agent"
+spawn-sh-at-startup      "xrdb -merge ~/env/.Xresources"
+spawn-sh-at-startup      "systemctl --user start --now dunst.service"
+spawn-sh-at-startup      "wl-paste --type text --watch cliphist store & disown"
+spawn-sh-at-startup      "wl-paste --type image --watch cliphist store & disown"
+spawn-sh-at-startup      "swaybg -i ~/env/Art/Wallpapers/Phonebooth-transporter.png -m fill"
+spawn-sh-at-startup      r#"swayidle -w \
+    timeout 600 'brightnessctl -s set 10%' resume 'brightnessctl -r' \
+    timeout 900 'swaylock' \
+    lock 'swaylock'"#
+
+// === INPUTS ===
+input {
+    keyboard {
+        xkb {
+            layout "us"
+        }
+        repeat-delay 200
+        repeat-rate 30
+        track-layout "global"
+        // numlock
+    }
+
+    touchpad {
+        tap
+        accel-speed 0.4
+        middle-emulation
+        accel-profile "flat"
+        scroll-method "two-finger"
+        click-method "clickfinger"
+        tap-button-map "left-middle-right"
+    }
+
+    mouse {
+        natural-scroll
+        accel-speed 0.0
+        middle-emulation
+        accel-profile "flat"
+    }
+
+    trackpoint {
+        natural-scroll
+        middle-emulation
+    }
+
+    trackball {
+        natural-scroll
+        middle-emulation
+    }
+
+    tablet {
+        map-to-output "eDP-1"
+    }
+
+    touch {
+        map-to-output "eDP-1"
+    }
+}
+
+gestures {
+    dnd-edge-view-scroll {
+        trigger-width 30
+        delay-ms 100
+        max-speed 1500
+    }
+
+    dnd-edge-workspace-switch {
+        trigger-height 50
+        delay-ms 100
+        max-speed 1500
+    }
+
+    hot-corners {
+        top-left
+    }
+}
+
+// === Outputs ===
+output "eDP-1" {
+    modeline 148.50  1920 2008 2052 2200  1080 1084 1089 1125 "+hsync" "+vsync"
+    scale 1.0
+    position x=0 y=0
+    focus-at-startup
+    backdrop-color "#05040A"
+    variable-refresh-rate on-demand=false
+}
+output "eDP-2" {
+    modeline 148.50  1920 2008 2052 2200  1080 1084 1089 1125 "+hsync" "+vsync"
+    scale 1.0
+    position x=0 y=0
+    focus-at-startup
+    backdrop-color "#05040A"
+    variable-refresh-rate on-demand=false
+}
+
+
+output "HDMI-A-4" {
+    mode "1920x1080@60.000"
+    scale 1.0
+    position x=1920 y=0
+}
+
+// === BINDS ===
+binds {
+    // Keybind overlay
+    Super+Shift+Slash        { show-hotkey-overlay; }
+
+    // SYSTEM STATE ACTIONS
+    Ctrl+Alt+Q               { quit; }
+    Ctrl+Alt+S               { spawn "shutdown" "now"; }
+    Ctrl+Alt+R               { spawn "systemctl" "reboot"; }
+
+    // CUSTOM BINDS
+    Super+Return             { spawn "kitty"; }
+    Super+B                  { spawn "helium"; }
+    Super+E                  { spawn "pcmanfm"; }
+    Super+Shift+Return       { spawn "alacritty"; }
+    Super+Shift+V            { spawn "pavucontrol"; }
+    Super+Shift+E            { spawn "emacsclient -c"; }
+    Super+R                  { spawn-sh "rofi -show run"; }
+    Super+P                  { spawn-sh "kitten quick-access-terminal"; }
+    Super+Space              { spawn-sh "rofi -show combi -modes combi -combi-modes 'window,drun,run'"; }
+    Super+V                  { spawn-sh "cliphist list | rofi -dmenu -p 'Clipboard' -theme config | cliphist decode | wl-copy"; }
+
+    // CORE ACTIONS
+    Super+Q                  { close-window; }
+    Super+O                  { toggle-overview; }
+    Super+F                  { maximize-column; }
+    Super+Shift+F            { fullscreen-window; }
+    Alt+Space                { toggle-window-floating; }
+
+    // SCREENSHOT BINDS
+    Super+Print              { screenshot show-pointer=false; }
+    Alt+Print                { screenshot-window show-pointer=false write-to-disk=false; }
+    Alt+Shift+Print          { screenshot-window show-pointer=false write-to-disk=true; }
+    Ctrl+Print               { screenshot-screen show-pointer=false write-to-disk=false; }
+    Ctrl+Shift+Print         { screenshot-screen show-pointer=false write-to-disk=true; }
+
+    // COLUMN/WINDOW BINDS
+    Alt+K                    { focus-window-up; }
+    Alt+J                    { focus-window-down; }
+    Alt+H                    { focus-column-left; }
+    Alt+L                    { focus-column-right; }
+
+    Alt+Shift+K              { move-window-up; }
+    Alt+Shift+J              { move-window-down; }
+    Alt+Shift+H              { move-column-left; }
+    Alt+Shift+L              { move-column-right; }
+
+    Alt+Shift+R              { switch-preset-window-height; }
+    Alt+Shift+equal          { switch-preset-column-width; }
+    Alt+Shift+minus          { switch-preset-column-width-back; }
+
+    // WORKSPACE BINDS
+    Super+K                  { focus-workspace-up; }
+    Super+J                  { focus-workspace-down; }
+
+    Super+Shift+K            { move-workspace-up; }
+    Super+Shift+J            { move-workspace-down; }
+
+    Super+Alt+K              { move-window-to-workspace-up; }
+    Super+Alt+J              { move-window-to-workspace-down; }
+
+    Super+WheelScrollUp      cooldown-ms=300 { focus-workspace-up; }
+    Super+WheelScrollDown    cooldown-ms=300 { focus-workspace-down; }
+    Super+TouchpadScrollUp   cooldown-ms=300 { focus-workspace-up; }
+    Super+TouchpadScrollDown cooldown-ms=300 { focus-workspace-down; }
+
+    Alt+1                    { focus-column 1; }
+    Alt+2                    { focus-column 2; }
+    Alt+3                    { focus-column 3; }
+    Alt+4                    { focus-column 4; }
+    Alt+5                    { focus-column 5; }
+    Alt+6                    { focus-column 6; }
+    Alt+7                    { focus-column 7; }
+    Alt+8                    { focus-column 8; }
+    Alt+9                    { focus-column 9; }
+    Alt+0                    { focus-column 10; }
+
+    Super+1                  { focus-workspace 1; }
+    Super+2                  { focus-workspace 2; }
+    Super+3                  { focus-workspace 3; }
+    Super+4                  { focus-workspace 4; }
+    Super+5                  { focus-workspace 5; }
+    Super+6                  { focus-workspace 6; }
+    Super+7                  { focus-workspace 7; }
+    Super+8                  { focus-workspace 8; }
+    Super+9                  { focus-workspace 9; }
+    Super+0                  { focus-workspace 10; }
+
+    Super+Shift+1            { move-column-to-workspace 1; }
+    Super+Shift+2            { move-column-to-workspace 2; }
+    Super+Shift+3            { move-column-to-workspace 3; }
+    Super+Shift+4            { move-column-to-workspace 4; }
+    Super+Shift+5            { move-column-to-workspace 5; }
+    Super+Shift+6            { move-column-to-workspace 6; }
+    Super+Shift+7            { move-column-to-workspace 7; }
+    Super+Shift+8            { move-column-to-workspace 8; }
+    Super+Shift+9            { move-column-to-workspace 9; }
+    Super+Shift+0            { move-column-to-workspace 10; }
+
+    // MONITOR BINDS
+    Super+Ctrl+K             { focus-monitor-up; }
+    Super+Ctrl+J             { focus-monitor-down; }
+    Super+Ctrl+H             { focus-monitor-left; }
+    Super+Ctrl+L             { focus-monitor-right; }
+
+    Ctrl+Alt+K               { move-column-to-monitor-up; }
+    Ctrl+Alt+J               { move-column-to-monitor-down; }
+    Ctrl+Alt+H               { move-column-to-monitor-left; }
+    Ctrl+Alt+L               { move-column-to-monitor-right; }
+
+    Super+Alt+Shift+J        { move-workspace-to-monitor-up; }
+    Super+Alt+Shift+K        { move-workspace-to-monitor-down; }
+    Super+Alt+Shift+H        { move-workspace-to-monitor-left; }
+    Super+Alt+Shift+L        { move-workspace-to-monitor-right; }
+
+    // Very Imp bind if you have something that is not letting you move on press it and it will not gobble up your inputs anymore
+    Super+Escape             { toggle-keyboard-shortcuts-inhibit; }
+
+    // AUDIO CONTROLS
+    XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioStop allow-when-locked=true { spawn "playerctl" "stop"; }
+    XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+
+    // BRIGHTNESS
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh r#"brightnessctl set 5%+ && b=$(brightnessctl | grep -o '[0-9]*%' | head -n1 | tr -d %) && dunstify -a Brightness -r 9994 -h int:value:$b "Brightness: $b%" -t 1000"#; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh r#"brightnessctl set 5%- && b=$(brightnessctl | grep -o '[0-9]*%' | head -n1 | tr -d %) && dunstify -a Brightness -r 9994 -h int:value:$b "Brightness: $b%" -t 1000"#; }
+
+    // VOLUME
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh r#"wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+ && v=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -oE '[0-9]+\.[0-9]+' | head -n1 | awk '{print int($1*100)}') && dunstify -a Volume -r 9993 -h int:value:$v "Volume: $v%" -t 1000"#; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh r#"wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- && v=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -oE '[0-9]+\.[0-9]+' | head -n1 | awk '{print int($1*100)}') && dunstify -a Volume -r 9993 -h int:value:$v "Volume: $v%" -t 1000"#; }
+    XF86AudioMute allow-when-locked=true { spawn-sh r#"wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && status=$(wpctl get-volume @DEFAULT_AUDIO_SINK@) && if echo "$status" | grep -q MUTED; then dunstify -a Volume -r 9993 -i audio-volume-muted "Volume Muted" -t 1000; else v=$(echo "$status" | grep -oE '[0-9]+\.[0-9]+' | awk '{print int($1*100)}'); dunstify -a Volume -r 9993 -i audio-volume-high -h int:value:$v "Volume: $v%" -t 1000; fi"#; }
+    XF86AudioMicMute allow-when-locked=true { spawn-sh r#"wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle && status=$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@) && if echo "$status" | grep -q MUTED; then dunstify -a Mic -r 9997 -i microphone-sensitivity-muted "Mic Muted" -t 1000; else v=$(echo "$status" | grep -oE '[0-9]+\.[0-9]+' | awk '{print int($1*100)}'); dunstify -a Mic -r 9997 -i audio-input-microphone-high -h int:value:$v "Mic: $v%" -t 1000; fi"#; }
+}
+
+// === LAYOUTS ===
+layout {
+    gaps 4
+    center-focused-column "never"
+    always-center-single-column
+    default-column-display "tabbed"
+    background-color "#05040A"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+        proportion 1.0
+    }
+
+    default-column-width { proportion 0.5; }
+
+    preset-window-heights {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+        proportion 1.0
+    }
+
+    insert-hint {
+        on
+        color "#B26BFF80"
+        gradient from="#9D6BFF80" to="#B26BFF80" angle=45 relative-to="workspace-view"
+    }
+
+    tab-indicator {
+        on
+        gap 5
+        width 4
+        corner-radius 8
+        position "right"
+        gaps-between-tabs 2
+        place-within-column
+        hide-when-single-tab
+        length total-proportion=1.0
+        active-color "#B26BFF"
+        urgent-color "#FF6B8D"
+        inactive-color "#8A81A6"
+        active-gradient from="#9D6BFF" to="#B26BFF" angle=45
+        urgent-gradient from="#FF6B8D" to="#FF8FAE" angle=45
+        inactive-gradient from="#171029" to="#231B38" angle=45 relative-to="workspace-view"
+    }
+
+    border {
+        on
+        width 3
+        active-color "#9D6BFF"
+        inactive-color "#231B38"
+        urgent-color "#FF6B8D"
+        active-gradient from="#9D6BFF" to="#B26BFF" angle=45
+        inactive-gradient from="#231B38" to="#372E4D" angle=45 relative-to="workspace-view"
+        urgent-gradient from="#FF6B8D" to="#FF8FAE" angle=45
+    }
+
+    focus-ring {
+        off
+    }
+
+    shadow {
+        off
+    }
+}
+
+recent-windows {
+    debounce-ms 750
+    open-delay-ms 150
+
+    highlight {
+        active-color "#9D6BFF"
+        urgent-color "#FF6B8D"
+        padding 30
+        corner-radius 0
+    }
+
+    previews {
+        max-height 480
+        max-scale 0.4
+    }
+
+    binds {
+        Alt+Tab           { next-window; }
+        Alt+Shift+Tab     { previous-window; }
+        Alt+grave         { next-window     filter="app-id"; }
+        Alt+Shift+grave   { previous-window filter="app-id"; }
+
+        Super+Tab         { next-window; }
+        Super+Shift+Tab   { previous-window; }
+        Super+grave       { next-window     filter="app-id"; }
+        Super+Shift+grave { previous-window filter="app-id"; }
+    }
+}
+
+// === WINDOW RULES ===
+window-rule {
+    clip-to-geometry true
+    geometry-corner-radius 8 8 0 0
+}
+window-rule {
+    baba-is-float true
+    clip-to-geometry true
+    match is-floating=true
+    geometry-corner-radius 8 8 8 8
+    shadow {
+        on
+    }
+}
+
+// === ANIMATIONS ===
+animations {
+    workspace-switch {
+        spring damping-ratio=1.0 stiffness=1000 epsilon=0.0001
+    }
+
+    window-open {
+        duration-ms 150
+        curve "ease-out-expo"
+    }
+
+    window-close {
+        duration-ms 150
+        curve "ease-out-quad"
+    }
+
+    horizontal-view-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    window-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    window-resize {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    config-notification-open-close {
+        spring damping-ratio=0.6 stiffness=1000 epsilon=0.001
+    }
+
+    exit-confirmation-open-close {
+        spring damping-ratio=0.6 stiffness=500 epsilon=0.01
+    }
+
+    screenshot-ui-open {
+        duration-ms 200
+        curve "ease-out-quad"
+    }
+
+    overview-open-close {
+        spring damping-ratio=0.8 stiffness=800 epsilon=0.0001
+    }
+
+    recent-windows-close {
+        spring damping-ratio=0.8 stiffness=800 epsilon=0.001
+    }
+}
+
+// === SWITCH EVENTS ===
+switch-events {
+    lid-close          { spawn "loginctl" "lock-session"; }
+    tablet-mode-on     { spawn "bash" "-c" "gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true"; }
+    tablet-mode-off    { spawn "bash" "-c" "gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled false"; }
+}
+
+// === MISC ===
+prefer-no-csd
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+environment {
+    XDG_CURRENT_DESKTOP "niri" // Tells desktop portals (XDG) you are running Niri
+    XDG_SESSION_DESKTOP "niri" // Identifies the current desktop session name
+    XDG_SESSION_TYPE "wayland" // Forces apps to treat the active session as Wayland
+
+    // Electron & Chromium Apps
+    NIXOS_OZONE_WL "1" // Forces NixOS-packaged Electron/Chromium apps to use native Wayland
+    ELECTRON_OZONE_PLATFORM_HINT "wayland" // Hints Electron apps to run natively on Wayland instead of XWayland
+
+    // Firefox / Mozilla (Gecko)
+    MOZ_ENABLE_WAYLAND "1" // Forces Firefox to run natively on Wayland
+    MOZ_WAYLAND_USE_VAAPI "1" // Enables VA-API hardware video acceleration in Firefox
+    MOZ_DBUS_REMOTE "1" // Allows controlling existing Firefox instances via DBus
+    MOZ_USE_XINPUT2 "1" // Enables smooth touchpad scrolling and high-precision input events
+
+    // Toolkit Backends
+    GDK_BACKEND "wayland" // Forces GTK3/GTK4 applications to use Wayland
+    QT_QPA_PLATFORM "wayland;xcb" // Tells Qt apps to prefer Wayland, falling back to XWayland if needed
+    CLUTTER_BACKEND "wayland" // Forces Clutter-based applications to use Wayland
+
+    // Java
+    _JAVA_AWT_WM_NONREPARENTING "1" // Fixes blank/gray window issues in Java GUI apps under tiling WM
+
+    // Hardware Acceleration & Intel VA-API
+    LIBVA_DRIVER_NAME "iHD" // Forces Intel's modern iHD driver for VA-API video decoding
+
+    // Uncomment if want nvidia to render instead of primary one
+    // __NV_PRIME_RENDER_OFFLOAD "1"
+    // __GLX_VENDOR_LIBRARY_NAME "nvidia"
+    __GL_GSYNC_ALLOWED "0"
+    __GL_VRR_ALLOWED "0"
+}
+cursor {
+    xcursor-theme "Bibata-Modern-Ice"
+    xcursor-size 30
+
+    hide-when-typing
+    hide-after-inactive-ms 1000
+}
+overview {
+    zoom 0.5
+    backdrop-color "#05040A"
+
+    workspace-shadow {
+        softness 40
+        spread 10
+        offset x=0 y=10
+        color "#00000050"
+    }
+}
