@@ -108,15 +108,3 @@ case "${1:-all}" in
     exit 1
     ;;
 esac
-
-sudo tee /etc/environment > /dev/null <<'EOF'
-export PAGER="bat"
-export EDITOR="nvim"
-export VISUAL="nvim"
-export BROWSER="helium"
-export XCURSOR_SIZE="30"
-export MIRU_PLAYER="mpv"
-export COLORTERM="truecolor"
-export XCURSOR_THEME="Bibata-Modern-Ice"
-export GTK_THEME="Flat-Remix-GTK-Violet-Darkest"
-EOF

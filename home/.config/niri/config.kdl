@@ -4,14 +4,15 @@ spawn-at-startup         "pipewire"
 spawn-at-startup         "wireplumber"
 spawn-at-startup         "pipewire-pulse"
 spawn-at-startup         "lxqt-policykit-agent"
+spawn-sh-at-startup      "brightnessctl set 40%"
 spawn-sh-at-startup      "xrdb -merge ~/rtix/home/.Xresources"
 spawn-sh-at-startup      "wl-paste --type text --watch cliphist store & disown"
 spawn-sh-at-startup      "wl-paste --type image --watch cliphist store & disown"
 spawn-sh-at-startup      "swaybg -i ~/rtix/Art/Wallpapers/Phonebooth-transporter.png -m fill"
 spawn-sh-at-startup      r#"swayidle -w \
-    timeout 600 'brightnessctl -s set 10%' resume 'brightnessctl -r' \
-    timeout 900 'swaylock' \
-    lock 'swaylock'"#
+    timeout 600 'playerctl status | grep -q "Playing" || brightnessctl -s set 10%' resume 'brightnessctl -r' \
+    timeout 900 'playerctl status | grep -q "Playing" || swaylock' \
+    lock 'playerctl status | grep -q "Playing" || swaylock'"#
 
 // === INPUTS ===
 input {
@@ -417,7 +418,8 @@ environment {
     XDG_SESSION_TYPE "wayland" // Forces apps to treat the active session as Wayland
 
     // Electron & Chromium Apps
-    NIXOS_OZONE_WL "1" // Forces NixOS-packaged Electron/Chromium apps to use native Wayland
+    OZONE_PLATFORM "wayland"
+    CHROME_OZONE_PLATFORM_HINT "wayland"
     ELECTRON_OZONE_PLATFORM_HINT "wayland" // Hints Electron apps to run natively on Wayland instead of XWayland
 
     // Firefox / Mozilla (Gecko)
