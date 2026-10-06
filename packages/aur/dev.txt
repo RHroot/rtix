@@ -1,5 +1,5 @@
-lazygit
 shfmt
+git-delta lazygit
 bun-bin prettierd
 go go-tools
 marksman-git mdformat

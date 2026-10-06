@@ -1,1 +1,1 @@
-fzf bat fish tmux zoxide neovim lolcat ripgrep
+jq git vim fzf bat less curl wget tree file btop fish tmux zoxide neovim lolcat ripgrep fastfetch

@@ -1,5 +1,8 @@
 // === STARTUP ===
 spawn-at-startup         "dunst"
+spawn-at-startup         "pipewire"
+spawn-at-startup         "wireplumber"
+spawn-at-startup         "pipewire-pulse"
 spawn-at-startup         "lxqt-policykit-agent"
 spawn-sh-at-startup      "xrdb -merge ~/rtix/home/.Xresources"
 spawn-sh-at-startup      "wl-paste --type text --watch cliphist store & disown"
