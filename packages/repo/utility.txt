@@ -1,1 +1,11 @@
-mpv gimp evince calibre audacity brightnessctl helium-browser obs-studio qbittorrent telegram-desktop libreoffice-fresh
+mpv
+gimp
+evince
+calibre
+audacity
+obs-studio
+qbittorrent
+brightnessctl
+helium-browser
+telegram-desktop
+libreoffice-fresh

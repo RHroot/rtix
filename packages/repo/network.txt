@@ -1,1 +1,3 @@
-networkmanager-openrc network-manager-applet ufw-openrc
+ufw-openrc
+networkmanager-openrc
+network-manager-applet

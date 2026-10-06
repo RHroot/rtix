@@ -1,1 +1,3 @@
-tlp-openrc thermald-openrc cpupower-openrc
+tlp-openrc
+thermald-openrc
+cpupower-openrc

@@ -1,1 +1,7 @@
-pipewire pipewire-pulse pipewire-alsa wireplumber pavucontrol alsa-utils alsa-utils-openrc
+pipewire
+alsa-utils
+wireplumber
+pavucontrol
+pipewire-alsa
+pipewire-pulse
+alsa-utils-openrc

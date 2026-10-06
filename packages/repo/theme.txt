@@ -1,2 +1,4 @@
-noto-fonts ttf-firacode-nerd
-adwaita-qt5 adwaita-qt6
+noto-fonts
+adwaita-qt5
+adwaita-qt6
+ttf-firacode-nerd

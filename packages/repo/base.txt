@@ -1,1 +1,4 @@
-base base-devel linux linux-firmware
+base
+base-devel
+linux
+linux-firmware
