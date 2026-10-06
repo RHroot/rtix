@@ -1,1 +1,1 @@
-networkmanager-openrc network-manager-applet fail2ban-openrc ufw-openrc
+networkmanager-openrc network-manager-applet ufw-openrc

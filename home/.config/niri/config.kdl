@@ -413,33 +413,36 @@ switch-events {
 prefer-no-csd
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 environment {
-    XDG_CURRENT_DESKTOP "niri" // Tells desktop portals (XDG) you are running Niri
-    XDG_SESSION_DESKTOP "niri" // Identifies the current desktop session name
-    XDG_SESSION_TYPE "wayland" // Forces apps to treat the active session as Wayland
+    XDG_CURRENT_DESKTOP "niri"
+    XDG_SESSION_DESKTOP "niri"
+    XDG_SESSION_TYPE "wayland"
 
     // Electron & Chromium Apps
     OZONE_PLATFORM "wayland"
     CHROME_OZONE_PLATFORM_HINT "wayland"
-    ELECTRON_OZONE_PLATFORM_HINT "wayland" // Hints Electron apps to run natively on Wayland instead of XWayland
+    ELECTRON_OZONE_PLATFORM_HINT "wayland"
 
     // Firefox / Mozilla (Gecko)
-    MOZ_ENABLE_WAYLAND "1" // Forces Firefox to run natively on Wayland
-    MOZ_WAYLAND_USE_VAAPI "1" // Enables VA-API hardware video acceleration in Firefox
-    MOZ_DBUS_REMOTE "1" // Allows controlling existing Firefox instances via DBus
-    MOZ_USE_XINPUT2 "1" // Enables smooth touchpad scrolling and high-precision input events
+    MOZ_DBUS_REMOTE "1"
+    MOZ_USE_XINPUT2 "1"
+    MOZ_ENABLE_WAYLAND "1"
+    MOZ_WAYLAND_USE_VAAPI "1"
 
     // Toolkit Backends
-    GDK_BACKEND "wayland" // Forces GTK3/GTK4 applications to use Wayland
-    QT_QPA_PLATFORM "wayland;xcb" // Tells Qt apps to prefer Wayland, falling back to XWayland if needed
-    CLUTTER_BACKEND "wayland" // Forces Clutter-based applications to use Wayland
+    GDK_BACKEND "wayland"
+    CLUTTER_BACKEND "wayland"
+    QT_QPA_PLATFORM "wayland;xcb"
+    
+    // Qt Theming (Dark Mode & GTK Integration)
+    QT_STYLE_OVERRIDE "adwaita-dark"
 
     // Java
-    _JAVA_AWT_WM_NONREPARENTING "1" // Fixes blank/gray window issues in Java GUI apps under tiling WM
+    _JAVA_AWT_WM_NONREPARENTING "1"
 
     // Hardware Acceleration & Intel VA-API
-    LIBVA_DRIVER_NAME "iHD" // Forces Intel's modern iHD driver for VA-API video decoding
+    LIBVA_DRIVER_NAME "iHD"
 
-    // Uncomment if want nvidia to render instead of primary one
+    // NVIDIA (Uncomment if using prime offload)
     // __NV_PRIME_RENDER_OFFLOAD "1"
     // __GLX_VENDOR_LIBRARY_NAME "nvidia"
     __GL_GSYNC_ALLOWED "0"

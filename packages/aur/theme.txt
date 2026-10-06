@@ -1,1 +1,2 @@
-ttf-merriweather papirus-icon-theme bibata-cursor-theme-bin
+ttf-merriweather
+papirus-icon-theme bibata-cursor-theme-bin

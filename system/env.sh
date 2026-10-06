@@ -24,6 +24,7 @@ MIRU_DOWNLOAD_DIR=.
 
 XCURSOR_SIZE=30
 XCURSOR_THEME=Bibata-Modern-Ice
+QT_STYLE_OVERRIDE "adwaita-dark"
 GTK_THEME=Flat-Remix-GTK-Violet-Darkest
 EOF
 

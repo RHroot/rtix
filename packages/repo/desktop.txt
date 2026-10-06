@@ -1,3 +1,2 @@
-xfce4 xfce4-goodies
-xorg-server xorg-xinit xorg-xwayland xwayland-satellite
-niri imv rofi dunst kitty swaybg swayidle cliphist wl-clipboard playerctl
+xorg-server xorg-xinit
+galaxy/xfce4 galaxy/xfce4-goodies

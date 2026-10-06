@@ -59,6 +59,28 @@ else
   echo "  -> [lib32] repository is already enabled."
 fi
 
+# 5. Ensure Chaotic-AUR is at the bottom (lowest priority)
+echo "  -> Positioning [chaotic-aur] at the bottom..."
+
+# Remove existing chaotic-aur block if it exists
+if grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
+  echo "    -> Removing existing [chaotic-aur] block..."
+  # Remove the [chaotic-aur] header and its Include line
+  sudo sed -i '/^\[chaotic-aur\]/,/^\[chaotic-aur\]\|^$/d' /etc/pacman.conf
+  # Also remove any orphaned Include line that might remain
+  sudo sed -i '/^Include = \/etc\/pacman\.d\/chaotic-mirrorlist$/d' /etc/pacman.conf
+fi
+
+# Check if we need to add it
+if ! grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
+  echo "    -> Adding [chaotic-aur] at the bottom..."
+  # Append to the end of the file
+  printf "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n" | sudo tee -a /etc/pacman.conf >/dev/null
+else
+  echo "    -> [chaotic-aur] is already at the bottom."
+fi
+
 echo ""
 echo "==> pacman.conf optimized successfully!"
+echo "==> Repository priority: system > world > galaxy > lib32 > chaotic-aur"
 echo "==> To restore the original file, run: sudo cp /etc/pacman.conf.original /etc/pacman.conf"
