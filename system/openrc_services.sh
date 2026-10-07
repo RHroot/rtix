@@ -7,7 +7,7 @@ done_msg() { printf '  -> [DONE] %s\n' "$*"; }
 
 msg "Ensuring core OpenRC services are enabled..."
 
-for svc in tlp ufw dbus thermald alsasound bluetoothd NetworkManager nvidia-persistenced; do
+for svc in ufw dbus alsasound bluetoothd NetworkManager nvidia-persistenced; do
   if rc-update show default 2>/dev/null | grep -q "\b$svc\b"; then
     skip "$svc already enabled."
   else

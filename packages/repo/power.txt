@@ -1,3 +1,0 @@
-tlp-openrc
-thermald-openrc
-cpupower-openrc
