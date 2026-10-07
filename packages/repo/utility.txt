@@ -1,5 +1,6 @@
 mpv
 gimp
+steam
 evince
 calibre
 audacity
