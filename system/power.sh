@@ -75,15 +75,16 @@ else
   skip "TLP configuration already optimal."
 fi
 
-msg "Configuring UPower thresholds..."
+msg "Configuring UPower..."
 UPOWER_CONF="/etc/UPower/UPower.conf"
 NEEDS_UPDATE="false"
-for key in PercentageLow PercentageCritical PercentageAction CriticalAction; do
+
+# Check thresholds
+for key in PercentageLow PercentageCritical PercentageAction; do
   case $key in
     PercentageLow) val="30" ;;
     PercentageCritical) val="20" ;;
     PercentageAction) val="15" ;;
-    CriticalAction) val="Suspend" ;;
   esac
   current=$(grep "^${key}=" "$UPOWER_CONF" 2>/dev/null | cut -d= -f2 || echo "")
   if [ "$current" != "$val" ]; then
@@ -92,16 +93,34 @@ for key in PercentageLow PercentageCritical PercentageAction CriticalAction; do
   fi
 done
 
+# Check suspend enablement
+if ! grep -q "^AllowRiskyCriticalPowerAction=true" "$UPOWER_CONF" 2>/dev/null; then
+  NEEDS_UPDATE="true"
+fi
+
+if ! grep -q "^CriticalPowerAction=Suspend" "$UPOWER_CONF" 2>/dev/null; then
+  NEEDS_UPDATE="true"
+fi
+
 if [ "$NEEDS_UPDATE" = "true" ]; then
-  update "UPower thresholds changed, updating..."
+  update "UPower configuration changed, updating..."
   sudo sed -i 's/^PercentageLow=.*/PercentageLow=30/' "$UPOWER_CONF"
   sudo sed -i 's/^PercentageCritical=.*/PercentageCritical=20/' "$UPOWER_CONF"
   sudo sed -i 's/^PercentageAction=.*/PercentageAction=15/' "$UPOWER_CONF"
-  sudo sed -i 's/^CriticalAction=.*/CriticalAction=Suspend/' "$UPOWER_CONF"
   sudo sed -i 's/^AllowRiskyCriticalPowerAction=.*/AllowRiskyCriticalPowerAction=true/' "$UPOWER_CONF"
-  done_msg "UPower thresholds updated (30%/20%/15%) with Suspend action."
+  sudo sed -i 's/^CriticalPowerAction=.*/CriticalPowerAction=Suspend/' "$UPOWER_CONF"
+  done_msg "UPower configured to suspend at 15% battery."
+
+  # Restart UPower to apply changes
+  info "Restarting UPower daemon..."
+  sudo pkill -f upowerd 2>/dev/null || true
+  sleep 2
+  # Trigger D-Bus to restart it
+  upower -d >/dev/null 2>&1 &
+  sleep 3
+  done_msg "UPower daemon restarted."
 else
-  skip "UPower thresholds already configured."
+  skip "UPower already configured."
 fi
 
 msg "Enabling services..."
@@ -123,5 +142,5 @@ for svc in tlp thermald; do
   fi
 done
 
-tip "UPower will automatically suspend at 15% battery (runs via D-Bus activation)."
-verify "pgrep -a upowerd && grep -E '^(PercentageAction|CriticalAction)' /etc/UPower/UPower.conf"
+tip "System will suspend at 15% battery."
+verify "upower -d | grep 'critical-action' && grep -E '^(PercentageAction|AllowRiskyCriticalPowerAction|CriticalPowerAction)' /etc/UPower/UPower.conf"

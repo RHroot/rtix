@@ -17,6 +17,7 @@ bind
 rsync
 socat
 unzip
+aria2
 ffmpeg
 zoxide
 neovim
