@@ -1,203 +1,311 @@
-# Linux System Information Commands
+# Linux System Information Commands (Artix/OpenRC Edition)
 
-A concise reference of useful commands to inspect system, hardware, and OS details.
-
-______________________________________________________________________
-
-## 🧠 Core System Overview
-
-### `hostnamectl`
-
-Provides a structured summary of system identity, OS, kernel, and firmware.
-
-```bash
-hostnamectl
-```
+A concise reference of useful commands to inspect system, hardware, and OS details on Artix with OpenRC.
 
 ______________________________________________________________________
 
-### `uname`
+## Core System Overview
 
+### /etc/os-release
+OS identity (replaces hostnamectl on OpenRC).
+
+    cat /etc/os-release
+
+______________________________________________________________________
+
+### uname
 Low-level kernel/system info.
 
-```bash
-uname -a    # everything
-uname -r    # kernel version
-uname -m    # architecture
-```
+    uname -a    # everything
+    uname -r    # kernel version
+    uname -m    # architecture
 
 ______________________________________________________________________
 
-## ⚙️ CPU Information
+### fastfetch
+Pretty system summary (you already have it installed).
 
-### `lscpu`
+    fastfetch
+    fastfetch -c my.jsonc   # your custom preset
 
+______________________________________________________________________
+
+## CPU Information
+
+### lscpu
 Detailed CPU architecture and features.
 
-```bash
-lscpu
-```
+    lscpu
 
 ______________________________________________________________________
 
-### `/proc/cpuinfo`
-
+### /proc/cpuinfo
 Raw CPU details from kernel.
 
-```bash
-cat /proc/cpuinfo
-```
+    cat /proc/cpuinfo
 
 ______________________________________________________________________
 
-## 💾 Memory
+### cpupower
+CPU frequency and governor info.
 
-### `free`
+    cpupower frequency-info
+    cpupower monitor           # real-time power states
 
+______________________________________________________________________
+
+## Memory
+
+### free
 Shows RAM and swap usage.
 
-```bash
-free -h
-```
+    free -h
 
 ______________________________________________________________________
 
-## 💽 Disk & Storage
+### vmstat
+Virtual memory statistics.
 
-### `lsblk`
+    vmstat 1    # refresh every second
 
+______________________________________________________________________
+
+## Disk & Storage
+
+### lsblk
 Lists block devices (disks, partitions).
 
-```bash
-lsblk
-```
+    lsblk
+    lsblk -f    # with filesystem info
 
 ______________________________________________________________________
 
-### `df`
-
+### df
 Filesystem disk usage.
 
-```bash
-df -h
-```
+    df -h
+    df -hT      # with filesystem type
 
 ______________________________________________________________________
 
-## 🧱 Hardware Information
+### btrfs (your filesystem)
 
-### `lshw` (may need install)
+    btrfs filesystem show
+    btrfs filesystem usage /
+    btrfs scrub status /
 
+______________________________________________________________________
+
+## Hardware Information
+
+### lshw
 Detailed hardware inventory.
 
-```bash
-sudo lshw -short
-```
+    sudo lshw -short
 
 ______________________________________________________________________
 
-### `inxi` (optional tool)
-
+### inxi
 Clean, human-readable system summary.
 
-```bash
-inxi -Fx
-```
+    inxi -Fxz    # full info, hide sensitive data
 
 ______________________________________________________________________
 
-## 🔌 Firmware / BIOS
+### hwinfo
+Alternative hardware probe.
 
-### `hostnamectl`
-
-Already includes firmware version and age.
-
-______________________________________________________________________
-
-### `fwupdmgr`
-
-Manage firmware updates.
-
-```bash
-fwupdmgr get-devices
-fwupdmgr get-updates
-```
+    sudo hwinfo --short
 
 ______________________________________________________________________
 
-## 🌐 Network
+## Firmware / BIOS
 
-### `ip`
+### dmidecode
+BIOS/firmware details.
 
+    sudo dmidecode -t bios
+    sudo dmidecode -t system
+
+______________________________________________________________________
+
+### fwupdmgr
+Manage firmware updates (if installed).
+
+    fwupdmgr get-devices
+    fwupdmgr get-updates
+
+______________________________________________________________________
+
+## Network
+
+### ip
 Modern network interface tool.
 
-```bash
-ip a
-```
+    ip a
+    ip route
 
 ______________________________________________________________________
 
-### `ss`
-
+### ss
 Socket statistics (replacement for netstat).
 
-```bash
-ss -tuln
-```
+    ss -tuln        # listening ports
+    ss -tnp         # established connections with process
 
 ______________________________________________________________________
 
-## 🔍 Logs & Boot Info
+### nmcli
+NetworkManager control.
 
-### `journalctl`
-
-System logs.
-
-```bash
-journalctl -b
-```
+    nmcli general status
+    nmcli device status
+    nmcli connection show
 
 ______________________________________________________________________
 
-### `uptime`
+### drill
+DNS lookup (you have Unbound DoT set up).
 
+    drill cloudflare.com
+    drill -T cloudflare.com @127.0.0.1   # via your local DoT resolver
+
+______________________________________________________________________
+
+## Logs & Boot Info
+
+### dmesg
+Kernel ring buffer (boot messages).
+
+    dmesg | less
+    dmesg -T           # human-readable timestamps
+    dmesg | grep -i error
+
+______________________________________________________________________
+
+### /var/log/
+System logs (replaces journalctl on OpenRC).
+
+    less /var/log/messages       # main system log
+    less /var/log/rc.log         # OpenRC boot log
+    sudo less /var/log/pacman.log
+    tail -f /var/log/messages    # follow in real-time
+
+______________________________________________________________________
+
+### uptime
 System running time and load.
 
-```bash
-uptime
-```
+    uptime
 
 ______________________________________________________________________
 
-## 🧪 Quick Combined View (Alias)
+## OpenRC Services
 
-Add this to your shell config (`.zshrc` / `.bashrc`):
+### rc-status
+Current state of all services.
 
-```bash
-alias sysinfo="hostnamectl && echo && lscpu | head -15 && echo && free -h"
-```
-
-______________________________________________________________________
-
-## ✅ Notes
-
-- Prefer modern tools (`ip`, `ss`) over deprecated ones (`ifconfig`, `netstat`)
-- `hostnamectl` is best for quick overview
-- Combine commands depending on use case (debugging vs monitoring)
+    rc-status
+    rc-status default    # services in default runlevel
 
 ______________________________________________________________________
 
-## 📌 Minimal Daily Set
+### rc-update
+Manage services across runlevels.
+
+    rc-update show                    # all enabled services
+    rc-update add <service> default   # enable at boot
+    rc-update del <service> default   # disable at boot
+
+______________________________________________________________________
+
+### rc-service
+Control services manually.
+
+    rc-service <service> status
+    rc-service <service> start
+    rc-service <service> stop
+    rc-service <service> restart
+
+______________________________________________________________________
+
+## Power Management
+
+### tlp-stat
+TLP power management details.
+
+    sudo tlp-stat -s     # summary
+    sudo tlp-stat -b     # battery info
+    sudo tlp-stat -c     # active config
+
+______________________________________________________________________
+
+### upower
+Battery and power devices.
+
+    upower -d
+    upower -i /org/freedesktop/UPower/devices/battery_BAT0
+
+______________________________________________________________________
+
+### acpi
+Quick battery/thermal status.
+
+    acpi -V              # everything
+    acpi -b              # battery only
+    acpi -t              # thermal only
+
+______________________________________________________________________
+
+## DNS-over-TLS (Unbound)
+
+    sudo unbound-control status
+    sudo unbound-control stats_noreset | grep cachehits
+    sudo unbound-control lookup cloudflare.com
+
+______________________________________________________________________
+
+## NVIDIA
+
+    nvidia-smi                    # GPU status and processes
+    nvidia-smi -q                 # detailed info
+    nvidia-offload glxinfo | grep "OpenGL vendor"   # test offload
+
+______________________________________________________________________
+
+## Quick Combined View (Alias)
+
+Add this to your shell config (~/.config/fish/conf.d/ or ~/.profile):
+
+Bash/Zsh:
+    alias sysinfo="cat /etc/os-release | grep PRETTY && echo && lscpu | head -15 && echo && free -h && echo && rc-status"
+
+Fish:
+    alias sysinfo="cat /etc/os-release | grep PRETTY; echo; lscpu | head -15; echo; free -h; echo; rc-status"
+
+______________________________________________________________________
+
+## Notes
+
+- No systemd: hostnamectl, journalctl, systemctl don't exist on Artix/OpenRC
+- Logs: Use /var/log/messages and dmesg instead of journalctl
+- Services: Use rc-service and rc-update instead of systemctl
+- Prefer modern tools: ip over ifconfig, ss over netstat
+- Fastfetch: Your best friend for a pretty system overview
+
+______________________________________________________________________
+
+## Minimal Daily Set
 
 If you only remember a few commands:
 
-```bash
-hostnamectl
-lscpu
-free -h
-lsblk
-df -h
-```
+    fastfetch              # pretty overview
+    lscpu                  # CPU info
+    free -h                # RAM usage
+    lsblk                  # disks
+    df -h                  # filesystem usage
+    rc-status              # service states
+    dmesg | tail           # recent kernel messages
 
 ______________________________________________________________________
 

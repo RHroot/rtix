@@ -134,18 +134,18 @@ fi
 
 if [ "$UNBOUND_UPDATED" = "true" ]; then
   info "Restarting Unbound to apply new configuration..."
-  sudo rc-service unbound restart >/dev/null
+  sudo rc-service unbound restart >/dev/null 2>&1 || true
   done_msg "Unbound restarted."
 elif rc-service unbound status 2>/dev/null | grep -q "started"; then
   skip "Unbound service is already running."
 else
   info "Starting Unbound service..."
-  sudo rc-service unbound start >/dev/null
+  sudo rc-service unbound start >/dev/null 2>&1 || true
   done_msg "Unbound service started."
 fi
 
 msg "Restarting NetworkManager to apply DNS changes..."
-sudo rc-service NetworkManager restart >/dev/null
+sudo rc-service NetworkManager restart >/dev/null 2>&1 || true
 done_msg "NetworkManager restarted."
 
 tip "DNS queries are now encrypted via DoT and cached locally."

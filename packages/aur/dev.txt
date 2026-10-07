@@ -1,9 +1,29 @@
+lazygit
+git-delta
+
+go
+lua
+python
+postgresql
+
+bun-bin
+python-uv
+
+lldb
+make
+clang
+cmake
+pkgconf
+go-tools
+
 shfmt
-git-delta lazygit
-bun-bin prettierd
-go go-tools
-marksman-git mdformat
-sqls postgresql sql-formatter
-lldb clang cmake make pkgconf
-lua stylua-bin lua-language-server
-python python-uv python-ruff python-lsp-server
+mdformat
+prettierd
+stylua-bin
+python-ruff
+sql-formatter
+
+sqls
+marksman-git
+python-lsp-server
+lua-language-server

@@ -20,7 +20,8 @@ fi
 
 enable_setting() {
   local key="$1"
-  local value="$2"
+  local value="${2:-}"
+
   if grep -qE "^${key}([[:space:]]|$|=)" /etc/pacman.conf; then
     skip "$key is already active."
     return

@@ -3,6 +3,7 @@ gimp
 evince
 calibre
 audacity
+libnotify
 obs-studio
 qbittorrent
 brightnessctl
