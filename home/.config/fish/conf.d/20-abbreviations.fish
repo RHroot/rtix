@@ -22,7 +22,6 @@ abbr -a openports "netstat -tulanp"
 
 # System control
 abbr -a shutnow "shutdown now"
-abbr -a reboot "systemctl reboot"
 
 # File operations
 abbr -a rm "rm -iv"
