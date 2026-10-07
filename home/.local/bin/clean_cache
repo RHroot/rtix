@@ -1,0 +1,5 @@
+#!/bin/sh
+
+paru -c
+sudo paccache -r
+sudo paccache -ruk0

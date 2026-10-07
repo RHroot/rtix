@@ -9,3 +9,5 @@ dbus-openrc
 cronie-openrc
 elogind-openrc
 syslog-ng-openrc
+
+pacman-contrib
