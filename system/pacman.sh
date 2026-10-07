@@ -1,28 +1,32 @@
 #!/bin/sh
-set -e
+set -eu
 
-echo "==> Optimizing /etc/pacman.conf..."
+msg() { printf '\n==> %s\n' "$*"; }
+info() { printf '  -> %s\n' "$*"; }
+skip() { printf '  -> [SKIP] %s\n' "$*"; }
+done_msg() { printf '  -> [DONE] %s\n' "$*"; }
+tip() { printf '\n  -> [TIP] %s\n' "$*"; }
+verify() { printf '  -> [VERIFY] %s\n' "$*"; }
 
-# 1. Single static backup (prevents infinite backups)
+msg "Optimizing /etc/pacman.conf..."
+
 if [ ! -f /etc/pacman.conf.original ]; then
+  info "Creating original backup..."
   sudo cp /etc/pacman.conf /etc/pacman.conf.original
-  echo "  -> Original backup saved to /etc/pacman.conf.original"
+  done_msg "Backup saved to /etc/pacman.conf.original."
 else
-  echo "  -> Backup already exists. Skipping backup step."
+  skip "Original backup already exists."
 fi
 
-# Helper function to safely enable settings
 enable_setting() {
   local key="$1"
   local value="$2"
-
-  # Check if the setting is already active (starts with key, not #)
   if grep -qE "^${key}([[:space:]]|$|=)" /etc/pacman.conf; then
-    echo "  -> ${key} is already active."
+    skip "$key is already active."
     return
   fi
 
-  echo "  -> Enabling ${key}..."
+  info "Enabling $key..."
   if [ -n "$value" ]; then
     sudo sed -i -E "s/^#[[:space:]]*${key}( =.*)?$/${key} = ${value}/" /etc/pacman.conf
   else
@@ -30,12 +34,10 @@ enable_setting() {
   fi
 }
 
-# 2. Enable Visual & Functional Improvements
 enable_setting "Color"
 enable_setting "VerbosePkgLists"
 enable_setting "ILoveCandy"
 
-# 3. Dynamic Parallel Downloads (Force update to optimal value, min 4, max 8)
 CORES=$(nproc)
 if [ "$CORES" -lt 4 ]; then
   PARALLEL=4
@@ -45,42 +47,31 @@ else
   PARALLEL=$CORES
 fi
 
-echo "  -> Detected $CORES CPU cores. Forcing ParallelDownloads = $PARALLEL."
-# Force replace any existing ParallelDownloads line (commented or not, any value)
+info "Detected $CORES CPU cores. Setting ParallelDownloads = $PARALLEL."
 sudo sed -i -E "s/^#?[[:space:]]*ParallelDownloads[[:space:]]*=.*/ParallelDownloads = ${PARALLEL}/" /etc/pacman.conf
+done_msg "ParallelDownloads optimized."
 
-# 4. Enable lib32 repository (32-bit compatibility for Steam, Wine, Discord, etc.)
 if grep -qE "^#\[lib32\]" /etc/pacman.conf; then
-  echo "  -> Enabling [lib32] repository..."
+  info "Enabling [lib32] repository..."
   sudo sed -i 's/^#\[lib32\]/[lib32]/' /etc/pacman.conf
-  # Uncomment the Include line immediately following [lib32]
   sudo sed -i '/^\[lib32\]/,+1 s/^#Include/Include/' /etc/pacman.conf
+  done_msg "[lib32] repository enabled."
 else
-  echo "  -> [lib32] repository is already enabled."
+  skip "[lib32] repository is already enabled."
 fi
 
-# 5. Ensure Chaotic-AUR is at the bottom (lowest priority)
-echo "  -> Positioning [chaotic-aur] at the bottom..."
-
-# Remove existing chaotic-aur block if it exists
+info "Positioning [chaotic-aur] at the bottom (lowest priority)..."
 if grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
-  echo "    -> Removing existing [chaotic-aur] block..."
-  # Remove the [chaotic-aur] header and its Include line
   sudo sed -i '/^\[chaotic-aur\]/,/^\[chaotic-aur\]\|^$/d' /etc/pacman.conf
-  # Also remove any orphaned Include line that might remain
   sudo sed -i '/^Include = \/etc\/pacman\.d\/chaotic-mirrorlist$/d' /etc/pacman.conf
 fi
 
-# Check if we need to add it
 if ! grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
-  echo "    -> Adding [chaotic-aur] at the bottom..."
-  # Append to the end of the file
   printf "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n" | sudo tee -a /etc/pacman.conf >/dev/null
+  done_msg "[chaotic-aur] added to bottom."
 else
-  echo "    -> [chaotic-aur] is already at the bottom."
+  skip "[chaotic-aur] is already at the bottom."
 fi
 
-echo ""
-echo "==> pacman.conf optimized successfully!"
-echo "==> Repository priority: system > world > galaxy > lib32 > chaotic-aur"
-echo "==> To restore the original file, run: sudo cp /etc/pacman.conf.original /etc/pacman.conf"
+tip "Repository priority is now: system > world > galaxy > lib32 > chaotic-aur"
+verify "grep -E '^(Color|VerbosePkgLists|ILoveCandy|ParallelDownloads)' /etc/pacman.conf"
