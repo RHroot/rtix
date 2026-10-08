@@ -3,6 +3,9 @@ base-devel
 linux
 linux-firmware
 
+kbd
+terminus-font
+
 udev
 btrfs-progs
 dbus-openrc
