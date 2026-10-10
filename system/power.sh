@@ -10,7 +10,8 @@ tip() { printf '\n  -> [TIP] %s\n' "$*"; }
 verify() { printf '  -> [VERIFY] %s\n' "$*"; }
 
 msg "Checking power management packages..."
-PACKAGES="tlp tlp-openrc thermald thermald-openrc upower"
+# Updated to use -runit packages
+PACKAGES="tlp tlp-runit thermald thermald-runit upower"
 MISSING=""
 for pkg in $PACKAGES; do
   if ! pacman -Q "$pkg" >/dev/null 2>&1; then
@@ -28,21 +29,13 @@ fi
 
 msg "Configuring TLP..."
 TLP_CUSTOM_CONF="/etc/tlp.d/99-custom.conf"
-DESIRED_TLP='CPU_SCALING_GOVERNOR_ON_AC="powersave"
-CPU_SCALING_GOVERNOR_ON_BAT="powersave"
-CPU_ENERGY_PERF_POLICY_ON_AC="balance_performance"
-CPU_ENERGY_PERF_POLICY_ON_BAT="balance_power"
-CPU_SCALING_MAX_FREQ_ON_BAT=2600000
-START_CHARGE_THRESH_BAT0=75
-STOP_CHARGE_THRESH_BAT0=80
-START_CHARGE_THRESH_BAT1=75
-STOP_CHARGE_THRESH_BAT1=80'
 
+# Check if config needs updating
 NEEDS_UPDATE="false"
 if [ ! -f "$TLP_CUSTOM_CONF" ]; then
   NEEDS_UPDATE="true"
 else
-  for setting in $DESIRED_TLP; do
+  for setting in CPU_SCALING_GOVERNOR_ON_AC="powersave" CPU_SCALING_GOVERNOR_ON_BAT="powersave" CPU_ENERGY_PERF_POLICY_ON_AC="balance_performance" CPU_ENERGY_PERF_POLICY_ON_BAT="balance_power" CPU_SCALING_MAX_FREQ_ON_BAT=2600000 START_CHARGE_THRESH_BAT0=75 STOP_CHARGE_THRESH_BAT0=80 START_CHARGE_THRESH_BAT1=75 STOP_CHARGE_THRESH_BAT1=80; do
     key=$(echo "$setting" | cut -d= -f1)
     value=$(echo "$setting" | cut -d= -f2-)
     if ! grep -q "^${key}=${value}" "$TLP_CUSTOM_CONF" 2>/dev/null; then
@@ -70,7 +63,8 @@ START_CHARGE_THRESH_BAT1=75
 STOP_CHARGE_THRESH_BAT1=80
 TLPEOF
   done_msg "TLP configuration updated."
-  sudo rc-service tlp restart >/dev/null 2>&1 || true
+  # Apply TLP settings immediately
+  sudo tlp start >/dev/null 2>&1 || true
 else
   skip "TLP configuration already optimal."
 fi
@@ -111,34 +105,34 @@ if [ "$NEEDS_UPDATE" = "true" ]; then
   sudo sed -i 's/^CriticalPowerAction=.*/CriticalPowerAction=Suspend/' "$UPOWER_CONF"
   done_msg "UPower configured to suspend at 15% battery."
 
-  # Restart UPower to apply changes
+  # Restart UPower daemon to apply changes (D-Bus will auto-respawn it)
   info "Restarting UPower daemon..."
   sudo pkill -f upowerd 2>/dev/null || true
-  sleep 2
-  # Trigger D-Bus to restart it
+  sleep 1
   upower -d >/dev/null 2>&1 &
-  sleep 3
+  sleep 2
   done_msg "UPower daemon restarted."
 else
   skip "UPower already configured."
 fi
 
-msg "Enabling services..."
+msg "Enabling runit services..."
 for svc in tlp thermald; do
-  if rc-update show default 2>/dev/null | grep -q "\b$svc\b"; then
+  if [ -L "/run/runit/service/$svc" ]; then
     skip "$svc already enabled."
   else
     info "Enabling $svc..."
-    sudo rc-update add "$svc" default >/dev/null
+    sudo ln -s "/etc/runit/sv/$svc" "/run/runit/service/$svc"
     done_msg "$svc enabled."
   fi
 
-  if rc-service "$svc" status 2>/dev/null | grep -q "started"; then
-    skip "$svc is already running."
-  else
+  # Ensure it's running (or restart to apply any new configs)
+  if ! sv status "$svc" >/dev/null 2>&1; then
     info "Starting $svc..."
-    sudo rc-service "$svc" start >/dev/null
+    sudo sv start "$svc" >/dev/null 2>&1 || true
     done_msg "$svc started."
+  else
+    skip "$svc is already running."
   fi
 done
 

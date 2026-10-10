@@ -23,7 +23,6 @@ stylua-bin
 python-ruff
 sql-formatter
 
-sqls
 marksman-git
 python-lsp-server
 lua-language-server

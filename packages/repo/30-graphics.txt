@@ -1,15 +1,15 @@
 # Intel / Generic Graphics
 mesa
-intel-media-driver
-intel-compute-runtime
+clinfo
 libva-utils
 vulkan-tools
-clinfo
 vulkan-icd-loader
+intel-media-driver
+intel-compute-runtime
 
 # NVIDIA 580xx
 nvidia-580xx
+nvidia-580xx-utils
+opencl-nvidia-580xx
 nvidia-580xx-settings
 lib32-nvidia-580xx-utils
-opencl-nvidia-580xx
-nvidia-utils-openrc

@@ -3,14 +3,14 @@ base-devel
 linux
 linux-firmware
 
+btrfs-progs
+
 kbd
 terminus-font
 
 udev
-btrfs-progs
-dbus-openrc
-cronie-openrc
-elogind-openrc
-syslog-ng-openrc
+dbus-runit
+cronie-runit
+elogind-runit
 
 pacman-contrib

@@ -4,4 +4,4 @@ wireplumber
 pavucontrol
 pipewire-alsa
 pipewire-pulse
-alsa-utils-openrc
+alsa-utils-runit

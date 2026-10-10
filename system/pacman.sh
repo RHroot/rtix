@@ -61,18 +61,35 @@ else
   skip "[lib32] repository is already enabled."
 fi
 
-info "Positioning [chaotic-aur] at the bottom (lowest priority)..."
-if grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
-  sudo sed -i '/^\[chaotic-aur\]/,/^\[chaotic-aur\]\|^$/d' /etc/pacman.conf
-  sudo sed -i '/^Include = \/etc\/pacman\.d\/chaotic-mirrorlist$/d' /etc/pacman.conf
-fi
-
+# Chaotic-AUR Setup (Lowest Priority)
 if ! grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
+  info "Setting up Chaotic-AUR (lowest priority)..."
+  KEY_ID="3056513887B78AEB"
+
+  # Dynamically fetch and sign key
+  if sudo pacman-key --recv-key "$KEY_ID" --keyserver keyserver.ubuntu.com >/dev/null 2>&1; then
+    sudo pacman-key --lsign-key "$KEY_ID" >/dev/null
+    done_msg "Chaotic-AUR key fetched and signed."
+  else
+    msg "[ERROR] Failed to fetch Chaotic-AUR key. Skipping setup."
+    exit 1
+  fi
+
+  # Install keyring and mirrorlist packages
+  info "Installing Chaotic-AUR keyring and mirrorlist..."
+  sudo pacman -U --noconfirm \
+    'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+    'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' >/dev/null
+
+  # Append to the VERY END of pacman.conf to ensure lowest priority
   printf "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n" | sudo tee -a /etc/pacman.conf >/dev/null
-  done_msg "[chaotic-aur] added to bottom."
+
+  info "Syncing package databases..."
+  sudo pacman -Sy --noconfirm >/dev/null
+  done_msg "Chaotic-AUR configured at lowest priority."
 else
-  skip "[chaotic-aur] is already at the bottom."
+  skip "Chaotic-AUR is already configured."
 fi
 
 tip "Repository priority is now: system > world > galaxy > lib32 > chaotic-aur"
-verify "grep -E '^(Color|VerbosePkgLists|ILoveCandy|ParallelDownloads)' /etc/pacman.conf"
+verify "grep -E '^(Color|VerbosePkgLists|ILoveCandy|ParallelDownloads|\[chaotic-aur\])' /etc/pacman.conf"

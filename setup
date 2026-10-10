@@ -24,7 +24,7 @@ install_packages() {
 
     if [ -n "$pkg_list" ]; then
       info "Processing repository packages..."
-      echo "$pkg_list" | sudo pacman -S --needed --noconfirm - >/dev/null
+      echo "$pkg_list" | sudo pacman -S --needed --noconfirm -
       done_msg "Repository packages installed."
     else
       skip "No repository packages listed."

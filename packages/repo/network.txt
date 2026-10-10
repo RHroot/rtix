@@ -1,3 +1,0 @@
-ufw-openrc
-networkmanager-openrc
-network-manager-applet

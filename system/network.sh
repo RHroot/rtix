@@ -39,9 +39,9 @@ fi
 msg "Configuring Unbound (DNS-over-TLS)..."
 UNBOUND_UPDATED="false"
 
-if ! pacman -Q unbound unbound-openrc >/dev/null 2>&1; then
-  info "Installing unbound and unbound-openrc..."
-  sudo pacman -S --noconfirm --needed unbound unbound-openrc >/dev/null
+if ! pacman -Q unbound unbound-runit >/dev/null 2>&1; then
+  info "Installing unbound and unbound-runit..."
+  sudo pacman -S --noconfirm --needed unbound unbound-runit >/dev/null
   done_msg "Unbound packages installed."
 else
   skip "Unbound packages already installed."
@@ -66,10 +66,10 @@ server:
 
 forward-zone:
     name: "."
-    forward-addr: 1.1.1.1@853#cloudflare-dns.com
-    forward-addr: 1.0.0.1@853#cloudflare-dns.com
     forward-addr: 8.8.8.8@853#dns.google
     forward-addr: 8.8.4.4@853#dns.google
+    forward-addr: 1.1.1.1@853#cloudflare-dns.com
+    forward-addr: 1.0.0.1@853#cloudflare-dns.com
     forward-addr: 9.9.9.9@853#dns.quad9.net
     forward-addr: 149.112.112.112@853#dns.quad9.net
 EOF
@@ -124,29 +124,26 @@ else
   done_msg "resolv.conf updated and made immutable."
 fi
 
-if rc-update show default 2>/dev/null | grep -q '\bunbound\b'; then
+if [ -L "/run/runit/service/unbound" ]; then
   skip "Unbound service already enabled."
 else
   info "Enabling Unbound service..."
-  sudo rc-update add unbound default >/dev/null
+  sudo ln -s /etc/runit/sv/unbound /run/runit/service/unbound
   done_msg "Unbound service enabled."
 fi
 
 if [ "$UNBOUND_UPDATED" = "true" ]; then
   info "Restarting Unbound to apply new configuration..."
-  sudo rc-service unbound restart >/dev/null 2>&1 || true
+  sudo sv restart unbound >/dev/null 2>&1 || true
   done_msg "Unbound restarted."
-elif rc-service unbound status 2>/dev/null | grep -q "started"; then
-  skip "Unbound service is already running."
 else
-  info "Starting Unbound service..."
-  sudo rc-service unbound start >/dev/null 2>&1 || true
-  done_msg "Unbound service started."
+  sudo sv start unbound >/dev/null 2>&1 || true
+  skip "Unbound service is already running."
 fi
 
 msg "Restarting NetworkManager to apply DNS changes..."
-sudo rc-service NetworkManager restart >/dev/null 2>&1 || true
+sudo sv restart NetworkManager >/dev/null 2>&1 || true
 done_msg "NetworkManager restarted."
 
 tip "DNS queries are now encrypted via DoT and cached locally."
-verify "drill -T cloudflare.com @127.0.0.1"
+verify "dig @127.0.0.1 cloudflare.com"
