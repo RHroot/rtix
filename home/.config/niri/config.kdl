@@ -113,7 +113,7 @@ binds {
     // SYSTEM STATE ACTIONS
     Ctrl+Alt+Q               { quit; }
     Ctrl+Alt+S               { spawn "shutdown" "now"; }
-    Ctrl+Alt+R               { spawn "systemctl" "reboot"; }
+    Ctrl+Alt+R               { spawn "loginctl" "reboot"; }
 
     // CUSTOM BINDS
     Super+Return             { spawn "kitty"; }
@@ -141,30 +141,43 @@ binds {
     Ctrl+Print               { screenshot-screen show-pointer=false write-to-disk=false; }
     Ctrl+Shift+Print         { screenshot-screen show-pointer=false write-to-disk=true; }
 
-    // COLUMN/WINDOW BINDS
+    // COLUMN/WINDOW/WORKSPACE BINDS
+    Super+K                  { focus-window-or-workspace-up; }
+    Super+J                  { focus-window-or-workspace-down; }
+    Super+H                  { focus-column-or-monitor-left; }
+    Super+L                  { focus-column-or-monitor-right; }
+
+    Super+Shift+K            { move-workspace-up; }
+    Super+Shift+J            { move-workspace-down; }
+
+    Super+Shift+H            { move-column-left-or-to-monitor-left; }
+    Super+Shift+L            { move-column-right-or-to-monitor-right; }
+
     Alt+K                    { focus-window-up; }
     Alt+J                    { focus-window-down; }
     Alt+H                    { focus-column-left; }
     Alt+L                    { focus-column-right; }
 
-    Alt+Shift+K              { move-window-up; }
-    Alt+Shift+J              { move-window-down; }
-    Alt+Shift+H              { move-column-left; }
-    Alt+Shift+L              { move-column-right; }
+    Super+Alt+K              { move-window-up-or-to-workspace-up; }
+    Super+Alt+J              { move-window-down-or-to-workspace-down; }
 
-    Alt+Shift+R              { switch-preset-window-height; }
-    Alt+Shift+equal          { switch-preset-column-width; }
-    Alt+Shift+minus          { switch-preset-column-width-back; }
+    Super+equal              { switch-preset-column-width; }
+    Super+minus              { switch-preset-column-width-back; }
 
-    // WORKSPACE BINDS
-    Super+K                  { focus-workspace-up; }
-    Super+J                  { focus-workspace-down; }
+    Super+BracketLeft        { consume-or-expel-window-left; }
+    Super+BracketRight       { consume-or-expel-window-right; }
 
-    Super+Shift+K            { move-workspace-up; }
-    Super+Shift+J            { move-workspace-down; }
+    // MONITOR BINDS
+    Super+Ctrl+K             { focus-monitor-up; }
+    Super+Ctrl+J             { focus-monitor-down; }
 
-    Super+Alt+K              { move-window-to-workspace-up; }
-    Super+Alt+J              { move-window-to-workspace-down; }
+    Ctrl+Alt+K               { move-column-to-monitor-up; }
+    Ctrl+Alt+J               { move-column-to-monitor-down; }
+
+    Alt+Shift+J              { move-workspace-to-monitor-up; }
+    Alt+Shift+K              { move-workspace-to-monitor-down; }
+    Alt+Shift+H              { move-workspace-to-monitor-left; }
+    Alt+Shift+L              { move-workspace-to-monitor-right; }
 
     Super+WheelScrollUp      cooldown-ms=300 { focus-workspace-up; }
     Super+WheelScrollDown    cooldown-ms=300 { focus-workspace-down; }
@@ -203,22 +216,6 @@ binds {
     Super+Shift+8            { move-column-to-workspace 8; }
     Super+Shift+9            { move-column-to-workspace 9; }
     Super+Shift+0            { move-column-to-workspace 10; }
-
-    // MONITOR BINDS
-    Super+Ctrl+K             { focus-monitor-up; }
-    Super+Ctrl+J             { focus-monitor-down; }
-    Super+Ctrl+H             { focus-monitor-left; }
-    Super+Ctrl+L             { focus-monitor-right; }
-
-    Ctrl+Alt+K               { move-column-to-monitor-up; }
-    Ctrl+Alt+J               { move-column-to-monitor-down; }
-    Ctrl+Alt+H               { move-column-to-monitor-left; }
-    Ctrl+Alt+L               { move-column-to-monitor-right; }
-
-    Super+Alt+Shift+J        { move-workspace-to-monitor-up; }
-    Super+Alt+Shift+K        { move-workspace-to-monitor-down; }
-    Super+Alt+Shift+H        { move-workspace-to-monitor-left; }
-    Super+Alt+Shift+L        { move-workspace-to-monitor-right; }
 
     // Very Imp bind if you have something that is not letting you move on press it and it will not gobble up your inputs anymore
     Super+Escape             { toggle-keyboard-shortcuts-inhibit; }
