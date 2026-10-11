@@ -1,0 +1,111 @@
+[Default Applications]
+
+# --- Images ---
+image/png=imv.desktop
+image/jpeg=imv.desktop
+image/webp=imv.desktop
+image/gif=imv.desktop
+image/svg+xml=imv.desktop
+image/bmp=imv.desktop
+image/tiff=imv.desktop
+image/x-ico=imv.desktop
+
+# --- Web ---
+text/html=helium.desktop
+x-scheme-handler/http=helium.desktop
+x-scheme-handler/https=helium.desktop
+x-scheme-handler/about=helium.desktop
+x-scheme-handler/unknown=helium.desktop
+x-scheme-handler/chrome=helium.desktop
+application/xhtml+xml=helium.desktop
+
+# --- Text & Code ---
+text/plain=vim.desktop
+text/x-python=vim.desktop
+text/x-shellscript=vim.desktop
+text/x-c=vim.desktop
+text/x-c++=vim.desktop
+text/x-java=vim.desktop
+text/x-lua=vim.desktop
+text/x-go=vim.desktop
+text/markdown=vim.desktop
+text/css=vim.desktop
+text/x-diff=vim.desktop
+application/json=vim.desktop
+application/xml=vim.desktop
+application/javascript=vim.desktop
+application/x-shellscript=vim.desktop
+inode/directory=thunar.desktop
+
+# --- Documents ---
+application/pdf=org.gnome.Evince.desktop
+application/epub+zip=calibre-ebook-viewer.desktop
+application/x-mobipocket-ebook=calibre-ebook-viewer.desktop
+application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop
+application/vnd.openxmlformats-officedocument.presentationml.presentation=libreoffice-impress.desktop
+application/msword=libreoffice-writer.desktop
+application/vnd.ms-excel=libreoffice-calc.desktop
+application/vnd.ms-powerpoint=libreoffice-impress.desktop
+application/vnd.oasis.opendocument.text=libreoffice-writer.desktop
+application/vnd.oasis.opendocument.spreadsheet=libreoffice-calc.desktop
+application/vnd.oasis.opendocument.presentation=libreoffice-impress.desktop
+
+# --- Audio ---
+audio/mpeg=mpv.desktop
+audio/ogg=mpv.desktop
+audio/wav=mpv.desktop
+audio/x-wav=mpv.desktop
+audio/flac=mpv.desktop
+audio/x-flac=mpv.desktop
+audio/aac=mpv.desktop
+audio/mp4=mpv.desktop
+audio/opus=mpv.desktop
+audio/x-vorbis+ogg=mpv.desktop
+audio/webm=mpv.desktop
+
+# --- Video ---
+video/mp4=mpv.desktop
+video/x-matroska=mpv.desktop
+video/webm=mpv.desktop
+video/ogg=mpv.desktop
+video/x-flv=mpv.desktop
+video/x-msvideo=mpv.desktop
+video/quicktime=mpv.desktop
+video/3gpp=mpv.desktop
+
+# --- Messaging ---
+x-scheme-handler/tg=org.telegram.desktop.desktop
+x-scheme-handler/ton=org.telegram.desktop.desktop
+
+# --- Torrents ---
+application/x-bittorrent=org.qbittorrent.qBittorrent.desktop
+x-scheme-handler/magnet=org.qbittorrent.qBittorrent.desktop
+
+# --- Notes ---
+text/markdown=md.obsidian.Obsidian.desktop
+x-scheme-handler/obsidian=md.obsidian.Obsidian.desktop
+
+# --- Image Editing ---
+image/x-xcf=gimp.desktop
+
+[Added Associations]
+image/png=gimp.desktop;imv.desktop;
+image/jpeg=gimp.desktop;imv.desktop;
+image/webp=gimp.desktop;imv.desktop;
+image/svg+xml=gimp.desktop;imv.desktop;
+text/plain=nvim.desktop;vim.desktop;
+text/markdown=md.obsidian.Obsidian.desktop;vim.desktop;
+application/pdf=org.gnome.Evince.desktop;libreoffice-writer.desktop;
+video/mp4=mpv.desktop;
+audio/mpeg=mpv.desktop;audacity.desktop;
+audio/x-wav=audacity.desktop;mpv.desktop;
+audio/flac=audacity.desktop;mpv.desktop;
+
+[Removed Associations]
+text/plain=mpv.desktop;
+video/mp4=vim.desktop;
+audio/mpeg=vim.desktop;
+image/jpeg=libreoffice-writer.desktop;
+application/pdf=vim.desktop;
+inode/directory=vim.desktop;
