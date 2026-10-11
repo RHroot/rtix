@@ -88,6 +88,7 @@ x-scheme-handler/obsidian=md.obsidian.Obsidian.desktop
 
 # --- Image Editing ---
 image/x-xcf=gimp.desktop
+x-scheme-handler/mailto=helium.desktop
 
 [Added Associations]
 image/png=gimp.desktop;imv.desktop;

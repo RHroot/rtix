@@ -11,7 +11,7 @@ verify() { printf '  -> [VERIFY] %s\n' "$*"; }
 msg "Configuring environment variables..."
 
 ENV_FILE="/etc/environment"
-if grep -q "PAGER=bat" "$ENV_FILE" 2>/dev/null && grep -q "EDITOR=nvim" "$ENV_FILE" 2>/dev/null; then
+if grep -q "PAGER=bat" "$ENV_FILE" 2>/dev/null && grep -q "MIRU_MODE=sub" "$ENV_FILE" 2>/dev/null; then
   skip "/etc/environment already configured."
 else
   info "Appending to /etc/environment..."
@@ -19,16 +19,28 @@ else
 
 # Custom Environment Variables
 PAGER=bat
-COLORTERM=truecolor
-MANROFFOPT=-c
-MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
 BROWSER=helium
+
+COLORTERM=truecolor
+
 EDITOR=nvim
 VISUAL=nvim
+
+MANROFFOPT=-c
+MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
 XCURSOR_SIZE=30
 XCURSOR_THEME=Bibata-Modern-Ice
+
 QT_STYLE_OVERRIDE=adwaita-dark
 GTK_THEME=Flat-Remix-GTK-Violet-Darkest
+
+MIRU_PLAYER=mpv
+MIRU_MENU=rofi
+MIRU_QUALITY=best
+MIRU_MODE=sub
+MIRU_DOWNLOAD_DIR="."
 EOF
   done_msg "/etc/environment updated."
 fi
