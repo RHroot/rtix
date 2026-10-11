@@ -10,4 +10,5 @@ playerctl
 xorg-xinit
 xorg-server
 wl-clipboard
+lxqt-policykit
 xwayland-satellite
